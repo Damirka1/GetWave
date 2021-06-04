@@ -16,18 +16,20 @@
         android:text="@string/app_name"
         android:textColor="#efefef"
         android:textSize="26sp"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/MainLayout"
-        android:layout_width="match_parent"
-        android:layout_height="580dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/SongMenu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/EnterText">
+        app:layout_constraintTop_toBottomOf="@+id/EnterText"
+        app:layout_constraintVertical_bias="0.0">
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -35,8 +37,8 @@
         android:id="@+id/SongMenu"
         android:layout_width="0dp"
         android:layout_height="70dp"
-        android:layout_marginBottom="4dp"
-        android:background="#151515"
+        android:layout_marginBottom="8dp"
+        android:background="#101020"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/LowerMenu"
         app:layout_constraintEnd_toEndOf="parent"
@@ -57,45 +59,51 @@
         <ImageView
             android:id="@+id/ImageMenu"
             android:layout_width="56dp"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:layout_marginStart="16dp"
             android:contentDescription="@string/SongArt"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
+            app:layout_constraintVertical_bias="0.5"
             app:srcCompat="@drawable/musicicon" />
 
         <TextView
             android:id="@+id/TitleMenu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
+            android:layout_width="240dp"
+            android:layout_height="22dp"
+            android:layout_marginStart="12dp"
             android:layout_marginTop="12dp"
             android:text="@string/SongName"
+            android:textAlignment="viewStart"
             android:textColor="#ffffff"
             android:textSize="16sp"
+            app:layout_constraintEnd_toStartOf="@+id/PlayMenu"
+            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toEndOf="@+id/ImageMenu"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/AuthorMenu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="6dp"
-            android:text="TextView"
+            android:layout_width="240dp"
+            android:layout_height="18dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
+            android:text="@string/SongAuthor"
+            android:textAlignment="viewStart"
             android:textColor="#dfdfdf"
             android:textSize="13sp"
+            app:layout_constraintEnd_toStartOf="@+id/PlayMenu"
+            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toEndOf="@+id/ImageMenu"
             app:layout_constraintTop_toBottomOf="@+id/TitleMenu" />
 
         <Button
             android:id="@+id/PlayMenu"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_marginEnd="32dp"
-            android:background="@android:drawable/ic_media_pause"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/pause"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -105,7 +113,7 @@
         android:id="@+id/LowerMenu"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:background="#151515"
+        android:background="#101020"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:layout_editor_absoluteX="16dp">
 
@@ -116,18 +124,20 @@
             android:layout_marginTop="44dp"
             android:fontFamily="sans-serif-light"
             android:text="@string/Home"
-            android:textColor="#888888"
+            android:textColor="#bfbfbf"
             app:layout_constraintEnd_toStartOf="@+id/FindText"
-            app:layout_constraintHorizontal_bias="0.448"
+            app:layout_constraintHorizontal_bias="0.48"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/HomeButton"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
             android:background="@drawable/homeunclicked"
             app:layout_constraintEnd_toStartOf="@+id/FindButton"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -138,17 +148,19 @@
             android:layout_marginTop="44dp"
             android:fontFamily="sans-serif-light"
             android:text="@string/Find"
-            android:textColor="#888888"
+            android:textColor="#bfbfbf"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/FindButton"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
             android:background="@drawable/findunclicked"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -158,16 +170,17 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="44dp"
             android:text="@string/Library"
-            android:textColor="#888888"
+            android:textColor="#bfbfbf"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.555"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/FindText"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/LibButton"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
             android:background="@drawable/libunclicked"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/FindButton"

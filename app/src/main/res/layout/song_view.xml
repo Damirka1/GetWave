@@ -8,10 +8,10 @@
 
     <ImageView
         android:id="@+id/SongImageSmall"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/musicicon" />
@@ -19,11 +19,11 @@
     <TextView
         android:id="@+id/SongAuthorSmall"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="18dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="40dp"
         android:text="@string/SongAuthor"
-        android:textAlignment="textStart"
+        android:textAlignment="viewStart"
         android:textColor="#dfdfdf"
         android:textSize="13sp"
         app:layout_constraintStart_toEndOf="@+id/SongImageSmall"
@@ -32,11 +32,11 @@
     <TextView
         android:id="@+id/SongNameSmall"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="22dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="12dp"
         android:text="@string/SongName"
-        android:textAlignment="textStart"
+        android:textAlignment="viewStart"
         android:textColor="#ffffff"
         android:textSize="16sp"
         app:layout_constraintStart_toEndOf="@+id/SongImageSmall"

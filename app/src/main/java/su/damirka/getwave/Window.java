@@ -1,155 +1,130 @@
 package su.damirka.getwave;
 
-import android.content.res.Resources;
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.Color;
-import android.os.Environment;
-import android.util.AttributeSet;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.graphics.drawable.Drawable;
+import android.icu.util.Calendar;
+import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+public abstract class Window {
+    protected Drawable Clicked;
+    protected Drawable Unclicked;
 
-import org.w3c.dom.Text;
+    Button Button;
+    TextView Text;
+    MainActivity M;
+    Context C;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
-public abstract class Window
-{
-    Button Button = null;
-    TextView Text = null;
-
-    Window(Button B, TextView T, MainActivity MA)
-    {
-        Update(B, T, MA);
-    }
-
-    void Update(Button B, TextView T, MainActivity MA)
-    {
+    Window(Button B, TextView T, MainActivity MA) {
         this.Button = B;
         this.Text = T;
-        this.Button.setOnClickListener(MA::OnClick);
+        this.M = MA;
+        this.C = MA.getApplicationContext();
     }
 
-    boolean IdIsEqual(int ID)
-    {
-        return Button.getId() == ID;
-    }
 
-    abstract void Show(Resources res);
-    abstract void Hide(Resources res);
+    abstract void Show();
+
+    abstract void Hide();
 }
 
 class FindWindow extends Window
 {
-    private RecyclerView RView;
-    private RecyclerView.LayoutManager LayoutManager;
-    private ConstraintLayout Layout;
-
-    private Songs S = null;
-
+    @SuppressLint("UseCompatLoadingForDrawables")
     FindWindow(MainActivity MA)
     {
         super(MA.findViewById(R.id.FindButton), MA.findViewById(R.id.FindText), MA);
 
-        S = new Songs();
-        RView = new RecyclerView(MA.getApplicationContext());
-        RView.setHasFixedSize(true);
-        LayoutManager = new LinearLayoutManager(MA.getApplicationContext(), LinearLayoutManager.VERTICAL, false);
-        RView.setLayoutManager(LayoutManager);
-        RView.setAdapter(S);
-        Layout = MA.findViewById(R.id.MainLayout);
+        Clicked = MA.getDrawable(R.drawable.findclicked);
+        Unclicked = MA.getDrawable(R.drawable.findunclicked);
     }
-
-    Songs GetSongs()
+    @Override
+    public void Show()
     {
-        return S;
-    }
-
-    void Update(MainActivity MA)
-    {
-        super.Update( MA.findViewById(R.id.FindButton), MA.findViewById(R.id.FindText), MA);
+        M.findViewById(R.id.EnterText).setVisibility(View.GONE);
+        Button.setBackground(Clicked);
+        Text.setTextColor(Color.parseColor("#e5e5e5"));
     }
 
     @Override
-    public void Show(Resources res)
+    public void Hide()
     {
-        Button.setBackground(res.getDrawable(R.drawable.findclicked, null));
-        Text.setTextColor(Color.parseColor("#d3d3d3"));
-        Layout.addView(RView);
-    }
-
-    @Override
-    public void Hide(Resources res)
-    {
-        Button.setBackground(res.getDrawable(R.drawable.findunclicked, null));
+        Button.setBackground(Unclicked);
         Text.setTextColor(Color.parseColor("#888888"));
-        Layout.removeView(RView);
     }
 }
 
 class HomeWindow extends Window
 {
-
+    @SuppressLint({"UseCompatLoadingForDrawables", "SetTextI18n"})
     HomeWindow(MainActivity MA)
     {
         super(MA.findViewById(R.id.HomeButton), MA.findViewById(R.id.HomeText), MA);
-    }
 
-    void Update(MainActivity MA)
-    {
-        super.Update( MA.findViewById(R.id.HomeButton), MA.findViewById(R.id.HomeText), MA);
+        Clicked = MA.getDrawable(R.drawable.homeclicked);
+        Unclicked = MA.getDrawable(R.drawable.homeunclicked);
+
+        TextView tv = MA.findViewById(R.id.EnterText);
+        int h = android.icu.util.Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+
+        DisplayMetrics DM = new DisplayMetrics();
+        MA.getWindowManager().getDefaultDisplay().getMetrics(DM);
+
+        tv.setTextSize(24);
+
+        if (h >= 0 && h <= 6)
+            tv.setText("Good night");
+        else if (h > 6 && h <= 12)
+            tv.setText("Good morning");
+        else if (h > 12 && h <= 17)
+            tv.setText("Good day");
+        else if (h > 18 && h <= 23)
+            tv.setText("Good evening");
     }
 
     @Override
-    public void Show(Resources res)
+    public void Show()
     {
-        Button.setBackground(res.getDrawable(R.drawable.homeclicked, null));
-        Text.setTextColor(Color.parseColor("#d3d3d3"));
+        Button.setBackground(Clicked);
+        Text.setTextColor(Color.parseColor("#e5e5e5"));
+        M.findViewById(R.id.EnterText).setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void Hide(Resources res)
+    public void Hide()
     {
-        Button.setBackground(res.getDrawable(R.drawable.homeunclicked, null));
+        Button.setBackground(Unclicked);
         Text.setTextColor(Color.parseColor("#888888"));
     }
 }
 
 class LibWindow extends Window
 {
-
-    LibWindow(MainActivity MA)
-    {
+    @SuppressLint("UseCompatLoadingForDrawables")
+    LibWindow(MainActivity MA) {
         super(MA.findViewById(R.id.LibButton), MA.findViewById(R.id.LibText), MA);
-    }
 
-    void Update(MainActivity MA)
-    {
-        super.Update(MA.findViewById(R.id.LibButton), MA.findViewById(R.id.LibText), MA);
-    }
-
-    @Override
-    void Show(Resources res)
-    {
-        Button.setBackground(res.getDrawable(R.drawable.libclicked, null));
-        Text.setTextColor(Color.parseColor("#d3d3d3"));
+        Clicked = MA.getDrawable(R.drawable.libclicked);
+        Unclicked = MA.getDrawable(R.drawable.libunclicked);
     }
 
     @Override
-    void Hide(Resources res)
+    void Show()
     {
-        Button.setBackground(res.getDrawable(R.drawable.libunclicked, null));
+        Button.setBackground(Clicked);
+        Text.setTextColor(Color.parseColor("#e5e5e5"));
+        M.findViewById(R.id.EnterText).setVisibility(View.GONE);
+    }
+
+    @Override
+    void Hide()
+    {
+        Button.setBackground(Unclicked);
         Text.setTextColor(Color.parseColor("#888888"));
     }
 }

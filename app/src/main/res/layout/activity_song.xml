@@ -12,16 +12,16 @@
         style="@android:style/Widget.DeviceDefault.Light.SeekBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="112dp"
+        android:layout_marginTop="84dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/SongArt" />
 
     <Button
         android:id="@+id/PlayButton"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
-        android:layout_marginTop="8dp"
-        android:background="@android:drawable/ic_media_play"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/play"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
@@ -29,23 +29,23 @@
 
     <Button
         android:id="@+id/PrevButton"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_marginTop="24dp"
-        android:background="@android:drawable/ic_media_previous"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/playprev"
         app:layout_constraintEnd_toStartOf="@+id/PlayButton"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.9"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/SongBar" />
 
     <Button
         android:id="@+id/NextButton"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_marginTop="24dp"
-        android:background="@android:drawable/ic_media_next"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/playnext"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintStart_toEndOf="@+id/PlayButton"
         app:layout_constraintTop_toBottomOf="@+id/SongBar" />
 
@@ -54,7 +54,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="16dp"
         android:text="@string/SongName"
         android:textColor="#d3d3d3"
         android:textSize="18sp"
@@ -66,18 +66,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="68dp"
+        android:layout_marginTop="4dp"
         android:text="@string/SongAuthor"
         android:textColor="#b0b0b0"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/SongArt" />
+        app:layout_constraintTop_toBottomOf="@+id/SongName" />
 
     <ImageView
         android:id="@+id/SongArt"
         android:layout_width="350dp"
         android:layout_height="350dp"
-        android:layout_marginTop="152dp"
+        android:layout_marginTop="104dp"
         android:contentDescription="@string/SongArt"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.524"
@@ -95,5 +95,16 @@
         android:rotation="-90"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <CheckBox
+        android:id="@+id/Repeat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="Repeat"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.529"
+        app:layout_constraintStart_toEndOf="@+id/NextButton"
+        app:layout_constraintTop_toBottomOf="@+id/SongBar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

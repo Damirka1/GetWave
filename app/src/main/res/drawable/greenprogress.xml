@@ -5,7 +5,7 @@
         <shape
             android:innerRadius="2dp">
             <solid
-                android:color="#212121"
+                android:color="#101020"
                 />
 
         </shape>
