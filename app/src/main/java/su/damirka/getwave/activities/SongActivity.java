@@ -1,19 +1,27 @@
-package su.damirka.getwave;
+package su.damirka.getwave.activities;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.IOException;
+import java.util.Objects;
+
+import su.damirka.getwave.Application;
+import su.damirka.getwave.R;
+import su.damirka.getwave.music.Song;
 
 public class SongActivity extends AppCompatActivity
 {
@@ -32,20 +40,19 @@ public class SongActivity extends AppCompatActivity
         private final Drawable Pause;
 
         private final Application App;
-        private final MusicPlayer MP;
 
         private final SongActivity SA;
 
         private boolean BarCaptured;
 
+        private boolean Playing;
 
         @SuppressLint("UseCompatLoadingForDrawables")
         private SongWindow(SongActivity sa)
         {
             SA = sa;
 
-            App = MainActivity.App;
-            MP = MainActivity.App.GetMusicPlayer();
+            App = MainActivity.GetApp();
 
             SongName = SA.findViewById(R.id.SongName);
             SongAuthor = SA.findViewById(R.id.SongAuthor);
@@ -55,7 +62,7 @@ public class SongActivity extends AppCompatActivity
             Image = SA.findViewById(R.id.SongArt);
             SongBar = SA.findViewById(R.id.SongBar);
             CB = SA.findViewById(R.id.Repeat);
-            CB.setChecked(MP.Repeat);
+            CB.setChecked(false);
 
             SA.findViewById(R.id.BackButton).setOnClickListener(this::OnClick);
             PlayButton.setOnClickListener(this::OnClick);
@@ -83,7 +90,9 @@ public class SongActivity extends AppCompatActivity
                 public void onStopTrackingTouch(SeekBar seekBar)
                 {
                     BarCaptured = false;
-                    MP.SeekTo(seekBar.getProgress());
+                    Bundle Msg = new Bundle();
+                    Msg.putString("Msg", "SeekTo");
+                    Msg.putInt("Position", seekBar.getProgress());
                 }
             });
 
@@ -92,13 +101,17 @@ public class SongActivity extends AppCompatActivity
 
             PlayButton.setBackground(Pause);
 
-            Update(MP.GetSong(), MP.GetDuration());
+            Bundle Data = sa.getIntent().getExtras();
+
+            Playing = Data.getByte("Playing") == 1;
+
+            UpdateSongBar(Data.getInt("Position"));
         }
 
-        private void Update(Songs.Song s, int MaxDuration)
+        private void Update(Song s, int MaxDuration)
         {
-            if(s.HasImage())
-                Image.setImageBitmap(s.GetImage());
+            if(s.HasArt())
+                Image.setImageBitmap(s.GetArt());
             else
                 Image.setImageResource(R.drawable.musicicon);
 
@@ -107,9 +120,12 @@ public class SongActivity extends AppCompatActivity
             if(Title != null)
                 SongName.setText(Title);
             else
-                SongName.setText(s.GetName());
+                SongName.setText(R.string.UndefinedTitle);
 
-            SongAuthor.setText(s.GetAuthor());
+            if(s.GetAuthor() != null)
+                SongAuthor.setText(s.GetAuthor());
+            else
+                SongAuthor.setText(R.string.UndefinedAuthor);
 
             SongBar.setMax(MaxDuration);
         }
@@ -130,50 +146,45 @@ public class SongActivity extends AppCompatActivity
             }
             else if(Id == R.id.PlayButton)
             {
-                if(!MP.Playing)
+                Bundle Msg = new Bundle();
+                if(!Playing)
                 {
-                    App.Play();
+                    Msg.putString("Msg", "Play");
+                    MainActivity.SendMsgToMusicService(Msg);
                     PlayButton.setBackground(Pause);
+                    Playing = true;
                 }
                 else
                 {
-                    App.Pause();
+                    Msg.putString("Msg", "Pause");
+                    MainActivity.SendMsgToMusicService(Msg);
                     PlayButton.setBackground(Play);
+                    Playing = false;
                 }
             }
             else if (Id == R.id.Repeat)
             {
-                MP.Repeat = CB.isChecked();
+                Bundle Msg = new Bundle();
+                Msg.putString("Msg", "Repeat");
+                Msg.putBoolean("Repeat", CB.isChecked());
+                MainActivity.SendMsgToMusicService(Msg);
             }
             else if (Id == R.id.NextButton)
             {
-                try
-                {
-                    App.PlayNext();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
+                Bundle Msg = new Bundle();
+                Msg.putString("Msg", "PlayNext");
+                MainActivity.SendMsgToMusicService(Msg);
             }
             else if (Id == R.id.PrevButton)
             {
-                try
-                {
-                    App.PlayPrev();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
+                Bundle Msg = new Bundle();
+                Msg.putString("Msg", "PlayPrev");
+                MainActivity.SendMsgToMusicService(Msg);
             }
         }
     }
 
-
-    @SuppressLint("StaticFieldLeak")
-    private static SongWindow SW;
-    private static boolean Visible;
+    private SongWindow SW;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -184,39 +195,61 @@ public class SongActivity extends AppCompatActivity
         SW = new SongWindow(this);
     }
 
-    public static boolean IsVisible()
-    {
-        return Visible;
-    }
 
-    public static void Update(Songs.Song s, int MaxDuration)
-    {
-        SW.Update(s, MaxDuration);
-    }
+//    public static void Update(Songs.Song s, int MaxDuration)
+//    {
+//        SW.Update(s, MaxDuration);
+//    }
+//
+//    public static void UpdateBar(int Duration)
+//    {
+//        SW.UpdateSongBar(Duration);
+//    }
 
-    public static void UpdateBar(int Duration)
-    {
-        SW.UpdateSongBar(Duration);
-    }
+
+    BroadcastReceiver br = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            Bundle Msg = intent.getExtras();
+
+            if(Objects.isNull(Msg))
+                return;
+
+            try {
+                switch (Msg.getString("Msg"))
+                {
+                    case "UpdateUI":
+                        SW.Update(Msg.getParcelable("Song"), Msg.getInt("Duration"));
+                        break;
+                    case "Playing":
+                        SW.UpdateSongBar(Msg.getInt("Position"));
+                        break;
+                }
+            } catch (NullPointerException nullPointerException)
+            {
+                nullPointerException.printStackTrace();
+            }
+        }
+    };
 
     @Override
     protected void onResume()
     {
         super.onResume();
-        Visible = true;
+        IntentFilter recv = new IntentFilter("UpdateUI");
+        this.registerReceiver(br, recv);
     }
 
     @Override
-    protected void onPause()
-    {
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onPause() {
         super.onPause();
-        Visible = false;
+        this.unregisterReceiver(br);
     }
 
-    @Override
-    protected void onStop()
-    {
-        super.onStop();
-        Visible = false;
-    }
 }

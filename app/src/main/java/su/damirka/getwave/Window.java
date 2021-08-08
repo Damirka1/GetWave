@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import su.damirka.getwave.activities.MainActivity;
+
 public abstract class Window {
     protected Drawable Clicked;
     protected Drawable Unclicked;

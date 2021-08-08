@@ -5,7 +5,7 @@
         <shape
             android:innerRadius="2dp">
             <solid
-                android:color="#101020"
+                android:color="#2f3f5f"
                 />
 
         </shape>
@@ -15,7 +15,7 @@
         <clip>
             <shape>
                 <solid
-                    android:color="@color/gray_400"
+                    android:color="@color/light_blue_600"
                     />
             </shape>
         </clip>
@@ -25,7 +25,7 @@
             <shape
                 >
                 <solid
-                    android:color="@color/teal_700"
+                    android:color="@color/purple_200"
                     />
             </shape>
         </clip>

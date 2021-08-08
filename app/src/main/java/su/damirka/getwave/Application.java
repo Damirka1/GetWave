@@ -1,120 +1,116 @@
 package su.damirka.getwave;
 
-import java.io.IOException;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 
-public class Application implements Runnable
+import su.damirka.getwave.activities.MainActivity;
+import su.damirka.getwave.connection.ConnectionService;
+import su.damirka.getwave.music.MusicService;
+import su.damirka.getwave.music.Song;
+
+public class Application
 {
-    private WindowManager WM;
-    private MusicPlayer MP;
-    private Playlist PL;
+//    public String ip = "192.168.1.30";
+//    public String port = "25565";
 
-    private boolean Execute;
-    private Thread AppThread;
+    private final WindowManager WM;
+    private final MainActivity MA;
+    private final ConnectionService ConnectionService;
 
-    public Application(MainActivity MA) throws IOException
-    {
+    private final Thread UpdateThread;
+    private boolean Sleep;
+    private boolean Running;
+
+    private native boolean Connect();
+
+    public Application(MainActivity MA) throws Exception {
+        System.loadLibrary("Client-Connection");
+
+        if(!Connect())
+            throw new Exception("Can't connect to server\n");
+
+        Running = true;
+        Sleep = false;
+
+        UpdateThread = new Thread(this::Update);
+
+        ConnectionService = new ConnectionService();
         WM = new WindowManager(this, MA);
-        MP = new MusicPlayer(this, MA);
+        this.MA = MA;
 
-        Execute = true;
-        AppThread = new Thread(this);
-        AppThread.start();
+        UpdateThread.start();
     }
 
-    public void PlaySong(Songs.Song s) throws IOException
+    public void UpdateSongMenu(long Index, int Duration)
     {
-        PL.PlaySong(s, MP);
+        WM.Update(Index, Duration);
     }
 
-    public void PlayNext() throws IOException
+    public void UpdateProgressbar(int Position)
     {
-        PL.PlayNext(MP);
+        WM.UpdateProgressBar(Position);
     }
 
-    public void PlayPrev() throws IOException
+    private void Update()
     {
-        PL.PlayPrev(MP);
+        System.out.println("UI thread started");
+        while(Running)
+        {
+            while(Sleep)
+            {
+                try
+                {
+                    Thread.sleep(500);
+                }
+                catch (InterruptedException interruptedException)
+                {
+                    interruptedException.printStackTrace();
+                }
+            }
+
+            try
+            {
+                Thread.sleep(250);
+            }
+            catch (InterruptedException interruptedException)
+            {
+                interruptedException.printStackTrace();
+            }
+
+            Bundle Msg = new Bundle();
+            Msg.putString("Msg", "UpdateProgressBar");
+            MainActivity.SendMsgToMusicService(Msg);
+        }
     }
 
-    public void SetPlaylist(Playlist PL)
+    public void SendMsgToMusicService(Bundle Msg, Intent MusicIntent)
     {
-        this.PL = PL;
+        MusicIntent.putExtras(Msg);
+        MA.startForegroundService(MusicIntent);
+    }
+
+    public void Resume()
+    {
+        Sleep = false;
     }
 
     public void Pause()
     {
-        MP.Pause();
+        Sleep = true;
     }
 
-    public void Stop()
-    {
-        MP.Stop();
-    }
-
-    public void Play()
-    {
-        MP.Play();
-    }
-
-    public void Exit()
-    {
-        Execute = false;
+    public void Exit() {
         WM.Release();
-        try
-        {
-            AppThread.join();
+        Running = false;
+        Sleep = false;
+
+        try {
+            UpdateThread.join();
+        } catch (InterruptedException interruptedException) {
+            interruptedException.printStackTrace();
         }
-        catch (InterruptedException ex)
-        {
-            ex.printStackTrace();
-        }
+
     }
 
-    public void ShowSongMenu(Songs.Song s)
-    {
-        WM.ShowSongMenu(s);
-    }
-
-    public void Update(Songs.Song s, int MaxDuration)
-    {
-        PL.Update();
-        WM.UpdateSongMenu(s, MaxDuration);
-
-        if(SongActivity.IsVisible())
-            SongActivity.Update(s, MaxDuration);
-    }
-
-    public MusicPlayer GetMusicPlayer()
-    {
-        return MP;
-    }
-
-    @Override
-    public void run()
-    {
-        while (Execute)
-        {
-            if(MP.Playing)
-            {
-                int Duration = MP.GetCurrPos();
-                WM.UpdateSongBar(Duration);
-
-                if(SongActivity.IsVisible())
-                    SongActivity.UpdateBar(Duration);
-            }
-            Sleep(100);
-        }
-    }
-
-    private void Sleep(int ms)
-    {
-        try
-        {
-            Thread.sleep(ms);
-        }
-        catch (InterruptedException ex)
-        {
-            ex.printStackTrace();
-        }
-    }
 }

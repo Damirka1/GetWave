@@ -3,7 +3,7 @@ package su.damirka.getwave;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.os.Environment;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -12,21 +12,27 @@ import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
+
+import su.damirka.getwave.activities.MainActivity;
+import su.damirka.getwave.connection.ConnectionService;
+import su.damirka.getwave.music.MusicPlayer;
+import su.damirka.getwave.music.MusicService;
+import su.damirka.getwave.music.Playlist;
+import su.damirka.getwave.music.Song;
+import su.damirka.getwave.views.PlaylistView;
 
 public class WindowManager
 {
     private final Application App;
     private MainActivity MA;
     private final Button[] MenuButtons;
-
-
-    private Playlist PL;
+    private final ConstraintLayout MainLayout;
+    private final SongMenu SM;
 
     private Window CurWindow;
-    private SongMenu SM;
+
+    private PlaylistView PlaylistView;
 
     public WindowManager(Application App, MainActivity ma)
     {
@@ -40,8 +46,10 @@ public class WindowManager
         MenuButtons[0].setOnClickListener(this::HomeClick);
         MenuButtons[1].setOnClickListener(this::FindClick);
         MenuButtons[2].setOnClickListener(this::LibClick);
-
         SM = new SongMenu();
+        MainLayout = ma.findViewById(R.id.MainLayout);
+
+        PlaylistView = new PlaylistView(null, ma.getApplicationContext(), MainLayout);
     }
 
     public void Release()
@@ -57,7 +65,6 @@ public class WindowManager
         CurWindow = null;
     }
 
-
     public void HomeClick(View v)
     {
         HidePlaylist();
@@ -72,20 +79,39 @@ public class WindowManager
         CurWindow = new FindWindow(MA);
         CurWindow.Show();
 
-        if(PL == null)
+        if(!PlaylistView.IsInitialized())
         {
-            PL = new Playlist(MA.getApplicationContext(), MA.findViewById(R.id.MainLayout), FindAllMusic());
-            App.SetPlaylist(PL);
-        }
+            int Index = ConnectionService.StartDownloadingPlaylistWithAllMusic();
 
-        PL.Show();
+            Optional<Playlist> Value = ConnectionService.GetDownloadedPlaylist(Index);
+            while(!Value.isPresent())
+            {
+                try
+                {
+                    Thread.sleep(100);
+                    Value = ConnectionService.GetDownloadedPlaylist(Index);
+                }
+                catch (InterruptedException interruptedException)
+                {
+                    interruptedException.printStackTrace();
+                }
+            }
+
+            PlaylistView.SetPlaylist(Value.get());
+
+            Bundle Msg = new Bundle();
+            Msg.putString("Msg", "Playlist");
+            Msg.putParcelable("Playlist", Value.get());
+            MainActivity.SendMsgToMusicService(Msg);
+        }
+        PlaylistView.Show();
 
     }
 
     private void HidePlaylist()
     {
-        if(PL != null)
-            PL.Hide();
+        if(PlaylistView.IsInitialized())
+            PlaylistView.Hide();
     }
 
     public void LibClick(View v)
@@ -96,41 +122,15 @@ public class WindowManager
         CurWindow.Show();
     }
 
-    public String[] FindAllMusic()
+    public void UpdateProgressBar(int Position)
     {
-        return GetAllMusic(Environment.getExternalStorageDirectory().toString() + "/Music");
-
-//        File Directory = new File(Environment.getExternalStorageDirectory().toString() + "/Music");
-//        File[] Files = Directory.listFiles();
-//        List<String> S = new ArrayList<>();
-//
-//        for (File File : Files)
-//        {
-//            String Name = File.getName();
-//            String extension = Name.substring(Name.lastIndexOf("."));
-//
-//            if(extension.contentEquals(".mp3"))
-//                S.add(File.getAbsolutePath());
-//        }
-//
-//        return S;
+        SM.UpdateBar(Position);
     }
 
-    public native String[] GetAllMusic(String Path);
-
-    public void ShowSongMenu(Songs.Song s)
+    public void Update(long Index, int Duration)
     {
-        SM.Show();
-    }
-
-    public void UpdateSongMenu(Songs.Song s, int MaxDuration)
-    {
-        SM.Update(s, MaxDuration);
-    }
-
-    public void UpdateSongBar(int Duration)
-    {
-        SM.UpdateBar(Duration);
+        SM.Update(PlaylistView.GetSongByIndex(Index), Duration);
+        PlaylistView.Update();
     }
 
     private class SongMenu
@@ -147,6 +147,8 @@ public class WindowManager
 
         private boolean Playing;
         private boolean Visible;
+
+        private Song CurrentSong;
 
         @SuppressLint("UseCompatLoadingForDrawables")
         SongMenu()
@@ -185,8 +187,16 @@ public class WindowManager
 
         public void OpenSongActivity(View v)
         {
-            Intent SongActivity = new Intent(MA, SongActivity.class);
-            MA.startActivity(SongActivity);
+//            Intent SongActivity = new Intent(MA, su.damirka.getwave.activities.SongActivity.class);
+//
+//            Bundle Data = new Bundle();
+//
+//            Data.putByte("Playing", (byte) (Playing ? 1 : 0));
+//            Data.putInt("Position", SongBar.getProgress());
+//            Data.putInt("Duration", SongBar.getMax());
+//            SongActivity.putExtras(Data);
+//
+//            MA.startActivity(SongActivity);
         }
 
         public void OnClick(View v)
@@ -195,40 +205,47 @@ public class WindowManager
             {
                 PlayBtn.setBackground(Play);
                 Playing = false;
-                App.Pause();
+                Bundle Msg = new Bundle();
+                Msg.putString("Msg", "Pause");
+                MainActivity.SendMsgToMusicService(Msg);
             }
             else
             {
                 PlayBtn.setBackground(Pause);
                 Playing = true;
-                App.Play();
+                Bundle Msg = new Bundle();
+                Msg.putString("Msg", "Play");
+                MainActivity.SendMsgToMusicService(Msg);
             }
         }
 
-        public void UpdateBar(int Dur)
+        public void UpdateBar(int Position)
         {
-            SongBar.setProgress(Dur);
+            SongBar.setProgress(Position);
         }
 
-        public void Update(Songs.Song s, int Duration)
+        public void Update(Song s, int Duration)
         {
+            CurrentSong = s;
+            SongBar.setMax(Duration);
             if(!Visible)
             {
                 Show();
                 Visible = true;
             }
 
-            SongBar.setMax(Duration);
-
             if(s.GetTitle() != null)
                 Title.setText(s.GetTitle());
             else
-                Title.setText(s.GetName());
+                Title.setText(R.string.UndefinedTitle);
 
-            Author.setText(s.GetAuthor());
+            if(s.GetAuthor() != null)
+                Author.setText(s.GetAuthor());
+            else
+                Author.setText(R.string.UndefinedAuthor);
 
-            if(s.HasImage())
-                Image.setImageBitmap(s.GetImage());
+            if(s.HasArt())
+                Image.setImageBitmap(s.GetArt());
             else
                 Image.setImageResource(R.drawable.musicicon);
         }

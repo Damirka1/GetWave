@@ -10,6 +10,6 @@
     <string name="SongName">Song name</string>
     <string name="SongAuthor">Song author</string>
     <string name="SongArt">Song art</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="UndefinedTitle">Undefined title</string>
+    <string name="UndefinedAuthor">Undefined author</string>
 </resources>

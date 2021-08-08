@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/SongLayout"
     android:layout_width="match_parent"
-    android:layout_height="70dp">
+    android:layout_height="80dp">
 
     <ImageView
         android:id="@+id/SongImageSmall"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/musicicon" />
@@ -19,26 +19,28 @@
     <TextView
         android:id="@+id/SongAuthorSmall"
         android:layout_width="wrap_content"
-        android:layout_height="18dp"
+        android:layout_height="22dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="40dp"
+        android:fontFamily="sans-serif-light"
         android:text="@string/SongAuthor"
         android:textAlignment="viewStart"
         android:textColor="#dfdfdf"
-        android:textSize="13sp"
+        android:textSize="15sp"
         app:layout_constraintStart_toEndOf="@+id/SongImageSmall"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/SongNameSmall"
         android:layout_width="wrap_content"
-        android:layout_height="22dp"
+        android:layout_height="23dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="sans-serif-light"
         android:text="@string/SongName"
         android:textAlignment="viewStart"
         android:textColor="#ffffff"
-        android:textSize="16sp"
+        android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@+id/SongImageSmall"
         app:layout_constraintTop_toTopOf="parent" />
 
