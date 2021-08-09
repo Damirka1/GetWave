@@ -18,8 +18,8 @@
 
     <Button
         android:id="@+id/PlayButton"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
+        android:layout_width="59dp"
+        android:layout_height="59dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/play"
         app:layout_constraintEnd_toEndOf="parent"
@@ -29,8 +29,8 @@
 
     <Button
         android:id="@+id/PrevButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
         android:layout_marginTop="32dp"
         android:background="@drawable/playprev"
         app:layout_constraintEnd_toStartOf="@+id/PlayButton"
@@ -40,8 +40,8 @@
 
     <Button
         android:id="@+id/NextButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
         android:layout_marginTop="32dp"
         android:background="@drawable/playnext"
         app:layout_constraintEnd_toEndOf="parent"
@@ -87,10 +87,10 @@
 
     <Button
         android:id="@+id/BackButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="28dp"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="344dp"
+        android:layout_marginTop="32dp"
         android:background="@drawable/abc_vector_test"
         android:rotation="-90"
         app:layout_constraintStart_toStartOf="parent"
@@ -100,10 +100,10 @@
         android:id="@+id/Repeat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="32dp"
         android:text="Repeat"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.529"
+        app:layout_constraintHorizontal_bias="0.431"
         app:layout_constraintStart_toEndOf="@+id/NextButton"
         app:layout_constraintTop_toBottomOf="@+id/SongBar" />
 

@@ -4,44 +4,55 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/SongLayout"
     android:layout_width="match_parent"
-    android:layout_height="80dp">
+    android:layout_height="60dp">
 
-    <ImageView
-        android:id="@+id/SongImageSmall"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="380dp"
+        android:layout_height="50dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="16dp"
+        android:background="#A4262B2F"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/musicicon" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/SongAuthorSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="22dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="40dp"
-        android:fontFamily="sans-serif-light"
-        android:text="@string/SongAuthor"
-        android:textAlignment="viewStart"
-        android:textColor="#dfdfdf"
-        android:textSize="15sp"
-        app:layout_constraintStart_toEndOf="@+id/SongImageSmall"
-        app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:id="@+id/SongImageSmall"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/musicicon" />
 
-    <TextView
-        android:id="@+id/SongNameSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="23dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:fontFamily="sans-serif-light"
-        android:text="@string/SongName"
-        android:textAlignment="viewStart"
-        android:textColor="#ffffff"
-        android:textSize="18sp"
-        app:layout_constraintStart_toEndOf="@+id/SongImageSmall"
-        app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/SongAuthorSmall"
+            android:layout_width="match_parent"
+            android:layout_height="22dp"
+            android:layout_marginStart="64dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="sans-serif-light"
+            android:text="@string/SongAuthor"
+            android:textAlignment="viewStart"
+            android:textColor="#dfdfdf"
+            android:textSize="12sp"
+            app:layout_constraintStart_toEndOf="@+id/SongImageSmall"
+            app:layout_constraintTop_toBottomOf="@+id/SongNameSmall" />
+
+        <TextView
+            android:id="@+id/SongNameSmall"
+            android:layout_width="match_parent"
+            android:layout_height="23dp"
+            android:layout_marginVertical="4dp"
+            android:layout_marginStart="64dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="sans-serif-light"
+            android:text="@string/SongName"
+            android:textAlignment="viewStart"
+            android:textColor="#ffffff"
+            android:textSize="15sp"
+            app:layout_constraintStart_toEndOf="@+id/SongImageSmall"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

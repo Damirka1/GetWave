@@ -93,6 +93,7 @@ public class SongActivity extends AppCompatActivity
                     Bundle Msg = new Bundle();
                     Msg.putString("Msg", "SeekTo");
                     Msg.putInt("Position", seekBar.getProgress());
+                    MainActivity.SendMsgToMusicService(Msg);
                 }
             });
 
@@ -104,11 +105,10 @@ public class SongActivity extends AppCompatActivity
             Bundle Data = sa.getIntent().getExtras();
 
             Playing = Data.getByte("Playing") == 1;
-
-            UpdateSongBar(Data.getInt("Position"));
+            UpdateSongBar(Data.getInt("Position"), Data.getInt("Duration"));
         }
 
-        private void Update(Song s, int MaxDuration)
+        private void Update(Song s)
         {
             if(s.HasArt())
                 Image.setImageBitmap(s.GetArt());
@@ -126,14 +126,25 @@ public class SongActivity extends AppCompatActivity
                 SongAuthor.setText(s.GetAuthor());
             else
                 SongAuthor.setText(R.string.UndefinedAuthor);
-
-            SongBar.setMax(MaxDuration);
         }
 
-        private void UpdateSongBar(int Duration)
+        private void UpdateSongBar(int Position, int Duration)
         {
             if(!BarCaptured)
-                SongBar.setProgress(Duration);
+                SongBar.setProgress(Position);
+            SongBar.setMax(Duration);
+        }
+
+        private void UpdateStates(boolean Playing, boolean Repeat)
+        {
+            CB.setChecked(Repeat);
+
+            this.Playing = Playing;
+
+            if(!Playing)
+                PlayButton.setBackground(Play);
+            else
+                PlayButton.setBackground(Pause);
         }
 
         private void OnClick(View v)
@@ -178,7 +189,13 @@ public class SongActivity extends AppCompatActivity
             else if (Id == R.id.PrevButton)
             {
                 Bundle Msg = new Bundle();
-                Msg.putString("Msg", "PlayPrev");
+                if(SongBar.getProgress() > 5000) // 5 seconds
+                {
+                    Msg.putString("Msg", "SeekTo");
+                    Msg.putInt("Position", 0);
+                }
+                else
+                    Msg.putString("Msg", "PlayPrev");
                 MainActivity.SendMsgToMusicService(Msg);
             }
         }
@@ -195,18 +212,6 @@ public class SongActivity extends AppCompatActivity
         SW = new SongWindow(this);
     }
 
-
-//    public static void Update(Songs.Song s, int MaxDuration)
-//    {
-//        SW.Update(s, MaxDuration);
-//    }
-//
-//    public static void UpdateBar(int Duration)
-//    {
-//        SW.UpdateSongBar(Duration);
-//    }
-
-
     BroadcastReceiver br = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -220,10 +225,13 @@ public class SongActivity extends AppCompatActivity
                 switch (Msg.getString("Msg"))
                 {
                     case "UpdateUI":
-                        SW.Update(Msg.getParcelable("Song"), Msg.getInt("Duration"));
+                        SW.Update(MainActivity.GetApp().GetSongByIndex(Msg.getInt("Index")));
                         break;
                     case "Playing":
-                        SW.UpdateSongBar(Msg.getInt("Position"));
+                        SW.UpdateSongBar(Msg.getInt("Position"), Msg.getInt("Duration"));
+                        break;
+                    case "CurrentState":
+                        SW.UpdateStates(Msg.getBoolean("Playing"), Msg.getBoolean("Repeat"));
                         break;
                 }
             } catch (NullPointerException nullPointerException)
@@ -239,10 +247,12 @@ public class SongActivity extends AppCompatActivity
         super.onResume();
         IntentFilter recv = new IntentFilter("UpdateUI");
         this.registerReceiver(br, recv);
+        MainActivity.GetApp().Resume();
     }
 
     @Override
-    protected void onStart() {
+    protected void onStart()
+    {
         super.onStart();
     }
 
@@ -250,6 +260,7 @@ public class SongActivity extends AppCompatActivity
     protected void onPause() {
         super.onPause();
         this.unregisterReceiver(br);
+        MainActivity.GetApp().Pause();
     }
 
 }

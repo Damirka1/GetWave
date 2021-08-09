@@ -61,25 +61,31 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.SongVi
 
         public void Initialize(Song s, int CurrPlaying, int Position)
         {
-            android.media.MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-            mmr.setDataSource(s.GetMetaStream());
-
-            String Title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-            String Author = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-
-            s.SetTitle(Title);
-            s.SetAuthor(Author);
-
-            ViewName.setText(Title);
-            ViewAuthor.setText(Author);
-
-            byte[] data = mmr.getEmbeddedPicture();
-            if(data != null)
+            if(!s.GetInitialized())
             {
-                Bitmap Art = BitmapFactory.decodeByteArray(data, 0, data.length);
-                s.SetArt(Art);
-                ViewImage.setImageBitmap(Art);
+                android.media.MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+                mmr.setDataSource(s.GetMetaStream());
+
+                String Title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+                String Author = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+
+                s.SetTitle(Title);
+                s.SetAuthor(Author);
+
+                byte[] data = mmr.getEmbeddedPicture();
+                if(data != null)
+                {
+                    Bitmap Art = BitmapFactory.decodeByteArray(data, 0, data.length);
+                    s.SetArt(Art);
+                }
+                s.SetInitialized();
             }
+
+            ViewName.setText(s.GetTitle());
+            ViewAuthor.setText(s.GetAuthor());
+
+            if(s.HasArt())
+                ViewImage.setImageBitmap(s.GetArt());
             else
                 ViewImage.setImageResource(R.drawable.musicicon);
 

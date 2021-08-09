@@ -1,4 +1,4 @@
-package su.damirka.getwave;
+package windows;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -6,27 +6,31 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.icu.util.Calendar;
 import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import su.damirka.getwave.R;
 import su.damirka.getwave.activities.MainActivity;
 
-public abstract class Window {
+public abstract class WindowView {
+    protected HeaderView Header;
     protected Drawable Clicked;
     protected Drawable Unclicked;
 
-    Button Button;
-    TextView Text;
-    MainActivity M;
-    Context C;
+    protected Button Button;
+    protected TextView Text;
+    protected MainActivity MA;
+    protected Context C;
 
 
-    Window(Button B, TextView T, MainActivity MA) {
+    WindowView(Button B, TextView T, MainActivity MA) {
         this.Button = B;
         this.Text = T;
-        this.M = MA;
+        this.MA = MA;
         this.C = MA.getApplicationContext();
+        Header = new HeaderView(MA);
     }
 
 
@@ -35,10 +39,10 @@ public abstract class Window {
     abstract void Hide();
 }
 
-class FindWindow extends Window
+class FindWindowView extends WindowView
 {
     @SuppressLint("UseCompatLoadingForDrawables")
-    FindWindow(MainActivity MA)
+    FindWindowView(MainActivity MA)
     {
         super(MA.findViewById(R.id.FindButton), MA.findViewById(R.id.FindText), MA);
 
@@ -48,7 +52,6 @@ class FindWindow extends Window
     @Override
     public void Show()
     {
-        M.findViewById(R.id.EnterText).setVisibility(View.GONE);
         Button.setBackground(Clicked);
         Text.setTextColor(Color.parseColor("#e5e5e5"));
     }
@@ -61,17 +64,21 @@ class FindWindow extends Window
     }
 }
 
-class HomeWindow extends Window
+class HomeWindowView extends WindowView
 {
-    @SuppressLint({"UseCompatLoadingForDrawables", "SetTextI18n"})
-    HomeWindow(MainActivity MA)
+    @SuppressLint({"UseCompatLoadingForDrawables"})
+    HomeWindowView(MainActivity MA)
     {
         super(MA.findViewById(R.id.HomeButton), MA.findViewById(R.id.HomeText), MA);
 
         Clicked = MA.getDrawable(R.drawable.homeclicked);
         Unclicked = MA.getDrawable(R.drawable.homeunclicked);
+        Header.SetViewById(R.layout.home_header_view);
+    }
 
-        TextView tv = MA.findViewById(R.id.EnterText);
+    @SuppressLint("SetTextI18n")
+    private void CalculateTimeForTextView(TextView tv)
+    {
         int h = android.icu.util.Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
 
         DisplayMetrics DM = new DisplayMetrics();
@@ -94,7 +101,12 @@ class HomeWindow extends Window
     {
         Button.setBackground(Clicked);
         Text.setTextColor(Color.parseColor("#e5e5e5"));
-        M.findViewById(R.id.EnterText).setVisibility(View.VISIBLE);
+        View view = Header.GetCurrentView();
+
+        TextView textView = view.findViewById(R.id.EnterText);
+
+        CalculateTimeForTextView(textView);
+        Header.Show();
     }
 
     @Override
@@ -102,13 +114,14 @@ class HomeWindow extends Window
     {
         Button.setBackground(Unclicked);
         Text.setTextColor(Color.parseColor("#888888"));
+        Header.Hide();
     }
 }
 
-class LibWindow extends Window
+class LibWindowView extends WindowView
 {
     @SuppressLint("UseCompatLoadingForDrawables")
-    LibWindow(MainActivity MA) {
+    LibWindowView(MainActivity MA) {
         super(MA.findViewById(R.id.LibButton), MA.findViewById(R.id.LibText), MA);
 
         Clicked = MA.getDrawable(R.drawable.libclicked);
@@ -120,7 +133,6 @@ class LibWindow extends Window
     {
         Button.setBackground(Clicked);
         Text.setTextColor(Color.parseColor("#e5e5e5"));
-        M.findViewById(R.id.EnterText).setVisibility(View.GONE);
     }
 
     @Override

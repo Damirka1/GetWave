@@ -1,4 +1,4 @@
-package su.damirka.getwave;
+package windows;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -14,31 +14,29 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import java.util.Optional;
 
+import su.damirka.getwave.Application;
+import su.damirka.getwave.R;
 import su.damirka.getwave.activities.MainActivity;
 import su.damirka.getwave.connection.ConnectionService;
-import su.damirka.getwave.music.MusicPlayer;
-import su.damirka.getwave.music.MusicService;
 import su.damirka.getwave.music.Playlist;
 import su.damirka.getwave.music.Song;
 import su.damirka.getwave.views.PlaylistView;
 
 public class WindowManager
 {
-    private final Application App;
     private MainActivity MA;
     private final Button[] MenuButtons;
     private final ConstraintLayout MainLayout;
     private final SongMenu SM;
 
-    private Window CurWindow;
+    private WindowView CurWindow;
 
     private PlaylistView PlaylistView;
 
-    public WindowManager(Application App, MainActivity ma)
+    public WindowManager(MainActivity MA)
     {
-        this.App = App;
-        this.MA = ma;
-        CurWindow = new HomeWindow(MA);
+        this.MA = MA;
+        CurWindow = new HomeWindowView(MA);
         CurWindow.Show();
 
         MenuButtons = new Button[]{MA.findViewById(R.id.HomeButton), MA.findViewById(R.id.FindButton), MA.findViewById(R.id.LibButton)};
@@ -47,9 +45,9 @@ public class WindowManager
         MenuButtons[1].setOnClickListener(this::FindClick);
         MenuButtons[2].setOnClickListener(this::LibClick);
         SM = new SongMenu();
-        MainLayout = ma.findViewById(R.id.MainLayout);
+        MainLayout = MA.findViewById(R.id.MainLayout);
 
-        PlaylistView = new PlaylistView(null, ma.getApplicationContext(), MainLayout);
+        PlaylistView = new PlaylistView(null, MA.getApplicationContext(), MainLayout);
     }
 
     public void Release()
@@ -65,18 +63,23 @@ public class WindowManager
         CurWindow = null;
     }
 
+    public boolean IsPlaying()
+    {
+        return SM.Playing;
+    }
+
     public void HomeClick(View v)
     {
         HidePlaylist();
         CurWindow.Hide();
-        CurWindow = new HomeWindow(MA);
+        CurWindow = new HomeWindowView(MA);
         CurWindow.Show();
     }
 
     public void FindClick(View v)
     {
         CurWindow.Hide();
-        CurWindow = new FindWindow(MA);
+        CurWindow = new FindWindowView(MA);
         CurWindow.Show();
 
         if(!PlaylistView.IsInitialized())
@@ -118,19 +121,29 @@ public class WindowManager
     {
         HidePlaylist();
         CurWindow.Hide();
-        CurWindow = new LibWindow(MA);
+        CurWindow = new LibWindowView(MA);
         CurWindow.Show();
     }
 
-    public void UpdateProgressBar(int Position)
+    public Song GetSongByIndex(long Index)
     {
-        SM.UpdateBar(Position);
+        return PlaylistView.GetSongByIndex(Index);
     }
 
-    public void Update(long Index, int Duration)
+    public void UpdateProgressBar(int Position, int Duration)
     {
-        SM.Update(PlaylistView.GetSongByIndex(Index), Duration);
+        SM.UpdateBar(Position, Duration);
+    }
+
+    public void Update(long Index)
+    {
+        SM.Update(PlaylistView.GetSongByIndex(Index));
         PlaylistView.Update();
+    }
+
+    public void UpdateStates(Bundle States)
+    {
+        SM.UpdateStates(States.getBoolean("Playing"));
     }
 
     private class SongMenu
@@ -169,6 +182,15 @@ public class WindowManager
             Visible = false;
         }
 
+        public void UpdateStates(boolean Playing)
+        {
+            this.Playing = Playing;
+            if(!Playing)
+                PlayBtn.setBackground(Play);
+            else
+                PlayBtn.setBackground(Pause);
+        }
+
         public void Show()
         {
             SongMenu.setVisibility(View.VISIBLE);
@@ -187,16 +209,16 @@ public class WindowManager
 
         public void OpenSongActivity(View v)
         {
-//            Intent SongActivity = new Intent(MA, su.damirka.getwave.activities.SongActivity.class);
-//
-//            Bundle Data = new Bundle();
-//
-//            Data.putByte("Playing", (byte) (Playing ? 1 : 0));
-//            Data.putInt("Position", SongBar.getProgress());
-//            Data.putInt("Duration", SongBar.getMax());
-//            SongActivity.putExtras(Data);
-//
-//            MA.startActivity(SongActivity);
+            Intent SongActivity = new Intent(MA, su.damirka.getwave.activities.SongActivity.class);
+
+            Bundle Data = new Bundle();
+
+            Data.putByte("Playing", (byte) (Playing ? 1 : 0));
+            Data.putInt("Position", SongBar.getProgress());
+            Data.putInt("Duration", SongBar.getMax());
+            SongActivity.putExtras(Data);
+
+            MA.startActivity(SongActivity);
         }
 
         public void OnClick(View v)
@@ -219,15 +241,15 @@ public class WindowManager
             }
         }
 
-        public void UpdateBar(int Position)
+        public void UpdateBar(int Position, int Duration)
         {
+            SongBar.setMax(Duration);
             SongBar.setProgress(Position);
         }
 
-        public void Update(Song s, int Duration)
+        public void Update(Song s)
         {
             CurrentSong = s;
-            SongBar.setMax(Duration);
             if(!Visible)
             {
                 Show();

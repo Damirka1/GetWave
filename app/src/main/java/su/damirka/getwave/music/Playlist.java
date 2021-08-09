@@ -24,8 +24,8 @@ public class Playlist implements Parcelable
     {
         Songs = new Song[files.length];
 
-        for(int i = 0; i < files.length; i++)
-            Songs[i] = new Song(files[i]);
+        for(int i = 0, j = files.length - 1; i < files.length; i++, j--)
+            Songs[i] = new Song(files[j]);
     }
 
     protected Playlist(Parcel in) {

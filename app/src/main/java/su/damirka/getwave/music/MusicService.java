@@ -46,6 +46,12 @@ public class MusicService extends Service
             super(looper);
         }
 
+        private void SetUpdateUI(Bundle Msg)
+        {
+            Msg.putString("Msg", "UpdateUI");
+            Msg.putInt("Index",(int) MusicPlayer.GetCurrentIndex());
+        }
+
         @Override
         public void handleMessage(Message msg) {
 
@@ -64,27 +70,19 @@ public class MusicService extends Service
                     break;
                 case "PlayNext":
                     MusicPlayer.PlayNext();
-                    Msg.putString("Msg", "UpdateUI");
-                    Msg.putInt("Index",(int) MusicPlayer.GetCurrentIndex());
-                    Msg.putInt("Duration", MusicPlayer.GetDuration());
+                    SetUpdateUI(Msg);
                     intent.setAction("UpdateUI");
                     break;
                 case "PlayPrev":
                     MusicPlayer.PlayPrev();
-                    Msg.putString("Msg", "UpdateUI");
-                    Msg.putInt("Index",(int) MusicPlayer.GetCurrentIndex());
-                    Msg.putInt("Duration", MusicPlayer.GetDuration());
+                    SetUpdateUI(Msg);
                     intent.setAction("UpdateUI");
                     break;
                 case "PlayOther":
-                {
                     int index = bundle.getInt("Index");
                     MusicPlayer.PlayAt(index);
-                    Msg.putString("Msg", "UpdateUI");
-                    Msg.putInt("Duration", MusicPlayer.GetDuration());
-                    Msg.putInt("Index", index);
+                    SetUpdateUI(Msg);
                     intent.setAction("UpdateUI");
-                }
                     break;
                 case "Stop":
                     MusicPlayer.Stop();
@@ -98,9 +96,26 @@ public class MusicService extends Service
                 case "Release":
                     MusicPlayer.Release();
                     break;
+                case "UpdateUI":
+                    SetUpdateUI(Msg);
+                    intent.setAction("UpdateUI");
+                    break;
                 case "UpdateProgressBar":
                     Msg.putString("Msg", "Playing");
                     Msg.putInt("Position", MusicPlayer.GetPosition());
+                    Msg.putInt("Duration", MusicPlayer.GetDuration());
+                    intent.setAction("UpdateUI");
+                    break;
+                case "SeekTo":
+                    MusicPlayer.SeekTo(bundle.getInt("Position"));
+                    break;
+                case "Repeat":
+                    MusicPlayer.SetRepeat(bundle.getBoolean("Repeat"));
+                    break;
+                case "GetStates":
+                    Msg.putString("Msg", "CurrentState");
+                    Msg.putBoolean("Playing", MusicPlayer.IsPlaying());
+                    Msg.putBoolean("Repeat", MusicPlayer.IsRepeat());
                     intent.setAction("UpdateUI");
                     break;
 
@@ -108,21 +123,6 @@ public class MusicService extends Service
             intent.putExtras(Msg);
 
             sendBroadcast(intent);
-        }
-    }
-    
-    private void Update()
-    {
-        System.out.println("UI thread started");
-        while(true)
-        {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException interruptedException) {
-                interruptedException.printStackTrace();
-            }
-
-
         }
     }
 

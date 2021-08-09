@@ -1,13 +1,12 @@
 package su.damirka.getwave;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import su.damirka.getwave.activities.MainActivity;
 import su.damirka.getwave.connection.ConnectionService;
-import su.damirka.getwave.music.MusicService;
 import su.damirka.getwave.music.Song;
+import windows.WindowManager;
 
 public class Application
 {
@@ -36,20 +35,25 @@ public class Application
         UpdateThread = new Thread(this::Update);
 
         ConnectionService = new ConnectionService();
-        WM = new WindowManager(this, MA);
+        WM = new WindowManager(MA);
         this.MA = MA;
 
         UpdateThread.start();
     }
 
-    public void UpdateSongMenu(long Index, int Duration)
+    public void UpdateSongMenu(long Index)
     {
-        WM.Update(Index, Duration);
+        WM.Update(Index);
     }
 
-    public void UpdateProgressbar(int Position)
+    public void UpdateProgressbar(int Position, int Duration)
     {
-        WM.UpdateProgressBar(Position);
+        WM.UpdateProgressBar(Position, Duration);
+    }
+
+    public void UpdateAppStates(Bundle States)
+    {
+        WM.UpdateStates(States);
     }
 
     private void Update()
@@ -78,9 +82,12 @@ public class Application
                 interruptedException.printStackTrace();
             }
 
-            Bundle Msg = new Bundle();
-            Msg.putString("Msg", "UpdateProgressBar");
-            MainActivity.SendMsgToMusicService(Msg);
+            if(WM.IsPlaying())
+            {
+                Bundle Msg = new Bundle();
+                Msg.putString("Msg", "UpdateProgressBar");
+                MainActivity.SendMsgToMusicService(Msg);
+            }
         }
     }
 
@@ -90,8 +97,23 @@ public class Application
         MA.startForegroundService(MusicIntent);
     }
 
+    public Song GetSongByIndex(long Index)
+    {
+        return WM.GetSongByIndex(Index);
+    }
+
     public void Resume()
     {
+        if(Sleep)
+        {
+            Bundle Msg = new Bundle();
+            Msg.putString("Msg", "UpdateUI");
+            MainActivity.SendMsgToMusicService(Msg);
+
+            Msg = new Bundle();
+            Msg.putString("Msg", "GetStates");
+            MainActivity.SendMsgToMusicService(Msg);
+        }
         Sleep = false;
     }
 

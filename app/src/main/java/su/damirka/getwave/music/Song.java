@@ -14,7 +14,18 @@ public class Song implements Parcelable
     private String Author;
     private Bitmap Art;
     private boolean HasArt;
+    private boolean Initialized;
 
+
+    public void SetInitialized()
+    {
+        Initialized = true;
+    }
+
+    public boolean GetInitialized()
+    {
+        return Initialized;
+    }
 
     protected Song(Parcel in) {
         Url = in.readString();

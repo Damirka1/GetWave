@@ -18,12 +18,10 @@ public class MusicPlayer implements MediaPlayer.OnCompletionListener, MediaPlaye
 
     private MediaPlayer MP;
     private AudioManager AM;
-    private MediaExtractor ME;
 
     private boolean Repeat;
     private boolean Ready;
     private boolean Playing;
-    private long Duration;
 
     private StreamMediaDataSource CurrentStream;
 
@@ -34,8 +32,6 @@ public class MusicPlayer implements MediaPlayer.OnCompletionListener, MediaPlaye
         Repeat = false;
         Ready = false;
         Playing = false;
-
-        ME = new MediaExtractor();
 
         MP = new MediaPlayer();
         MP.setAudioAttributes(
@@ -49,24 +45,14 @@ public class MusicPlayer implements MediaPlayer.OnCompletionListener, MediaPlaye
         MP.setOnPreparedListener(this);
     }
 
-    public int GetPosition() {
-        if(Objects.nonNull(CurrentStream))
-        {
-            try {
-                MediaFormat mf = ME.getTrackFormat(0);
-                if (Objects.nonNull(mf)) {
-                    int Position = MP.getCurrentPosition();
-                    int BitRate = mf.getInteger(MediaFormat.KEY_BIT_RATE) / 8 / 1000;
-                    return Position * BitRate;
-                }
-            } catch (IllegalArgumentException ignored) {}
-        }
-        return 0;
+    public int GetPosition()
+    {
+        return MP.getCurrentPosition();
     }
 
     public int GetDuration()
     {
-        return (int) CurrentStream.GetFileSize();
+        return MP.getDuration();
     }
 
     public long GetCurrentIndex() { return Playlist.GetCurrentSelected(); }
@@ -76,11 +62,18 @@ public class MusicPlayer implements MediaPlayer.OnCompletionListener, MediaPlaye
         this.Playlist = Playlist;
     }
 
+    public void SetRepeat(boolean Flag)
+    {
+        Repeat = Flag;
+    }
+
     public void PlayAt(int Index)
     {
         Song song = Playlist.GetSongByIndex(Index);
         PlaySong(song);
     }
+
+    public boolean IsRepeat() { return Repeat; }
 
     public boolean IsReady()
     {
@@ -108,14 +101,8 @@ public class MusicPlayer implements MediaPlayer.OnCompletionListener, MediaPlaye
             CurrentStream = another;
 
         CurrentStream.PrepareASync();
-
-        try {
-            MP.setDataSource(CurrentStream);
-            MP.prepareAsync();
-            ME.setDataSource(CurrentStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        MP.setDataSource(CurrentStream);
+        MP.prepareAsync();
     }
 
     public void Play()

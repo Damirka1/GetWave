@@ -50,10 +50,13 @@ public class MainActivity extends AppCompatActivity
                 switch (Msg.getString("Msg"))
                 {
                     case "UpdateUI":
-                        App.UpdateSongMenu(Msg.getInt("Index"), Msg.getInt("Duration"));
+                        App.UpdateSongMenu(Msg.getInt("Index"));
                         break;
                     case "Playing":
-                        App.UpdateProgressbar(Msg.getInt("Position"));
+                        App.UpdateProgressbar(Msg.getInt("Position"), Msg.getInt("Duration"));
+                        break;
+                    case "CurrentState":
+                        App.UpdateAppStates(Msg);
                         break;
                 }
             } catch (NullPointerException nullPointerException)
