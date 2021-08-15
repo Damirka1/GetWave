@@ -1,5 +1,6 @@
 package su.damirka.getwave.music;
 
+import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaDataSource;
@@ -7,6 +8,8 @@ import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.support.v4.media.session.MediaControllerCompat;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,15 +26,20 @@ public class MusicPlayer implements MediaPlayer.OnCompletionListener, MediaPlaye
     private boolean Ready;
     private boolean Playing;
 
+    private Song CurrentSong;
     private StreamMediaDataSource CurrentStream;
 
     private Playlist Playlist;
 
-    public MusicPlayer()
+    private final MediaControllerCompat.TransportControls Controller;
+
+    public MusicPlayer(Context context, MediaControllerCompat.TransportControls Controller)
     {
         Repeat = false;
         Ready = false;
         Playing = false;
+
+        this.Controller = Controller;
 
         MP = new MediaPlayer();
         MP.setAudioAttributes(
@@ -41,8 +49,20 @@ public class MusicPlayer implements MediaPlayer.OnCompletionListener, MediaPlaye
                         .build()
         );
 
+        MP.setWakeMode(context, PowerManager.PARTIAL_WAKE_LOCK);
+
         MP.setOnCompletionListener(this);
         MP.setOnPreparedListener(this);
+    }
+
+    public Playlist GetPlaylist()
+    {
+        return Playlist;
+    }
+
+    public void SetVolume(float Left, float Right)
+    {
+        MP.setVolume(Left, Right);
     }
 
     public int GetPosition()
@@ -67,10 +87,14 @@ public class MusicPlayer implements MediaPlayer.OnCompletionListener, MediaPlaye
         Repeat = Flag;
     }
 
+    public Song GetCurrentSong()
+    {
+        return CurrentSong;
+    }
+
     public void PlayAt(int Index)
     {
-        Song song = Playlist.GetSongByIndex(Index);
-        PlaySong(song);
+        PlaySong(Playlist.GetSongByIndex(Index));
     }
 
     public boolean IsRepeat() { return Repeat; }
@@ -82,9 +106,10 @@ public class MusicPlayer implements MediaPlayer.OnCompletionListener, MediaPlaye
 
     public boolean IsPlaying() { return Playing; }
 
-    private void PlaySong(Song song){
+    private void PlaySong(Song song)  {
 
-        StreamMediaDataSource another = song.GetStream();
+        CurrentSong = song;
+        StreamMediaDataSource another = CurrentSong.GetStream();
 
         if(Ready)
             Stop();
@@ -138,9 +163,10 @@ public class MusicPlayer implements MediaPlayer.OnCompletionListener, MediaPlaye
         MP.reset();
     }
 
-    public void SeekTo(int Pos)
+    public void SeekTo(long Pos)
     {
-        MP.seekTo(Pos);
+        if(Pos < CurrentStream.GetIterator())
+            MP.seekTo((int) Pos);
     }
 
     public void Release()
@@ -161,20 +187,17 @@ public class MusicPlayer implements MediaPlayer.OnCompletionListener, MediaPlaye
         if(!Playing)
             return;
 
-        Bundle Msg = new Bundle();
         if(Repeat)
             PlayAt((int) Playlist.GetCurrentSelected());
         else
-            Msg.putString("Msg", "PlayNext");
-
-        MainActivity.SendMsgToMusicService(Msg);
+            Controller.skipToNext();
     }
 
     @Override
     public void onPrepared(MediaPlayer mp)
     {
         Ready = true;
-        Playing = true;
-        mp.start();
+        Controller.play();
     }
+
 }

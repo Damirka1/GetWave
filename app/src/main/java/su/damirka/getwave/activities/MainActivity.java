@@ -1,15 +1,19 @@
 package su.damirka.getwave.activities;
 
-import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.RemoteException;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 
 import su.damirka.getwave.Application;
 import su.damirka.getwave.R;
@@ -21,6 +25,9 @@ public class MainActivity extends AppCompatActivity
     private static Context ApplicationContext;
     private static MusicService _MusicService;
 
+    private static MusicService.PlayerServiceBinder playerServiceBinder;
+    private static MediaControllerCompat MediaController;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -29,49 +36,83 @@ public class MainActivity extends AppCompatActivity
         try {
             _MusicService = new MusicService();
             ApplicationContext = this.getApplicationContext();
-            //startForegroundService(_MusicServiceIntent);
             App = new Application(this);
+
+            bindService(new Intent(this, MusicService.class), new ServiceConnection() {
+                @Override
+                public void onServiceConnected(ComponentName name, IBinder service) {
+                    playerServiceBinder = (MusicService.PlayerServiceBinder) service;
+                    try {
+                        MediaController = new MediaControllerCompat(
+                                MainActivity.this, playerServiceBinder.getMediaSessionToken());
+                        MediaController.registerCallback(
+                                new MediaControllerCompat.Callback() {
+                                    @Override
+                                    public void onMetadataChanged(MediaMetadataCompat metadata)
+                                    {
+                                        super.onMetadataChanged(metadata);
+
+                                    }
+
+                                    @Override
+                                    public void onPlaybackStateChanged(PlaybackStateCompat state)
+                                    {
+                                        if (state == null)
+                                            return;
+
+                                        if(Objects.nonNull(state.getExtras()))
+                                        {
+                                            Bundle Msg = state.getExtras();
+
+                                            if(Objects.nonNull(Msg.getString("Msg")))
+                                            {
+                                                String Info = Msg.getString("Msg");
+                                                if(Info.equals("UpdateProgressBar"))
+                                                    App.UpdateProgressbar(Msg.getLong("Position"), Msg.getLong("Duration"));
+                                                else if(Info.equals("UpdatePlayList"))
+                                                    App.UpdateDefaultPlaylist(Msg);
+                                                return;
+                                            }
+                                        }
+
+                                        App.UpdateAppStates(state);
+                                    }
+                                }
+                        );
+                    }
+                    catch (RemoteException e) {
+                        MediaController = null;
+                    }
+                }
+
+                @Override
+                public void onServiceDisconnected(ComponentName name) {
+                    playerServiceBinder = null;
+                    MediaController = null;
+                }
+            }, BIND_AUTO_CREATE);
+
+            Intent MusicServiceIntent = new Intent(ApplicationContext, _MusicService.getClass());
+            startForegroundService(MusicServiceIntent);
+
+            if(Objects.nonNull(MediaController))
+                MediaController.getTransportControls().sendCustomAction("UpdatePlayList", null);
+
         } catch (Exception e) {
             onDestroy();
             e.printStackTrace();
         }
     }
 
-    BroadcastReceiver br = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            Bundle Msg = intent.getExtras();
-
-            if(Objects.isNull(Msg))
-                return;
-
-            try {
-                switch (Msg.getString("Msg"))
-                {
-                    case "UpdateUI":
-                        App.UpdateSongMenu(Msg.getInt("Index"));
-                        break;
-                    case "Playing":
-                        App.UpdateProgressbar(Msg.getInt("Position"), Msg.getInt("Duration"));
-                        break;
-                    case "CurrentState":
-                        App.UpdateAppStates(Msg);
-                        break;
-                }
-            } catch (NullPointerException nullPointerException)
-            {
-                nullPointerException.printStackTrace();
-            }
-        }
-    };
+    public static MediaControllerCompat GetMediaController()
+    {
+        return MediaController;
+    }
 
     @Override
     protected void onResume()
     {
         super.onResume();
-        IntentFilter recv = new IntentFilter("UpdateUI");
-        this.registerReceiver(br, recv);
         App.Resume();
     }
 
@@ -80,23 +121,18 @@ public class MainActivity extends AppCompatActivity
         return App;
     }
 
-    public static void SendMsgToMusicService(Bundle Msg)
+    @Override
+    protected void onStart()
     {
-        Intent MusicServiceIntent = new Intent(ApplicationContext, _MusicService.getClass());
-        App.SendMsgToMusicService(Msg, MusicServiceIntent);
-    }
-
-    @Override
-    protected void onStart() {
         super.onStart();
-        Intent MusicServiceIntent = new Intent(ApplicationContext, _MusicService.getClass());
-        startForegroundService(MusicServiceIntent);
+
+
     }
 
     @Override
-    protected void onPause() {
+    protected void onPause()
+    {
         super.onPause();
-        this.unregisterReceiver(br);
         App.Pause();
     }
 
@@ -104,8 +140,8 @@ public class MainActivity extends AppCompatActivity
     protected void onDestroy()
     {
         super.onDestroy();
-        Intent MusicServiceIntent = new Intent(ApplicationContext, _MusicService.getClass());
-        stopService(MusicServiceIntent);
+//        Intent MusicServiceIntent = new Intent(ApplicationContext, _MusicService.getClass());
+//        stopService(MusicServiceIntent);
         App.Exit();
     }
 

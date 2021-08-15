@@ -6,16 +6,11 @@ import android.os.Parcelable;
 
 public class Song implements Parcelable
 {
-    private StreamMediaDataSource Stream;
-    private MetaMediaDataSource MetaStream;
-    private String Url;
-
-    private String Title;
-    private String Author;
+    private final StreamMediaDataSource Stream;
+    private final Track TrackInfo;
     private Bitmap Art;
     private boolean HasArt;
     private boolean Initialized;
-
 
     public void SetInitialized()
     {
@@ -28,12 +23,14 @@ public class Song implements Parcelable
     }
 
     protected Song(Parcel in) {
-        Url = in.readString();
-        Title = in.readString();
-        Author = in.readString();
+        TrackInfo = new Track();
+        TrackInfo.Path = in.readString();
+        TrackInfo.Title = in.readString();
+        TrackInfo.Author = in.readString();
+
         Art = in.readParcelable(Bitmap.class.getClassLoader());
         HasArt = in.readByte() != 0;
-        Stream = new StreamMediaDataSource(Url);
+        Stream = new StreamMediaDataSource(TrackInfo.Path);
     }
 
     public static final Creator<Song> CREATOR = new Creator<Song>() {
@@ -48,16 +45,6 @@ public class Song implements Parcelable
         }
     };
 
-    public void SetTitle(String Title)
-    {
-        this.Title = Title;
-    }
-
-    public void SetAuthor(String Author)
-    {
-        this.Author = Author;
-    }
-
     public void SetArt(Bitmap Art)
     {
         HasArt = true;
@@ -66,12 +53,12 @@ public class Song implements Parcelable
 
     public String GetTitle()
     {
-        return Title;
+        return TrackInfo.Title;
     }
 
     public String GetAuthor()
     {
-        return Author;
+        return TrackInfo.Author;
     }
 
     public Bitmap GetArt()
@@ -84,11 +71,10 @@ public class Song implements Parcelable
         return HasArt;
     }
 
-    public Song(String Url)
+    public Song(Track track)
     {
-        this.Url = Url;
-        Stream = new StreamMediaDataSource(Url);
-        MetaStream = new MetaMediaDataSource(Url);
+        TrackInfo = track;
+        Stream = new StreamMediaDataSource(TrackInfo.Path);
         HasArt = false;
     }
 
@@ -97,14 +83,9 @@ public class Song implements Parcelable
         return Stream;
     }
 
-    public MetaMediaDataSource GetMetaStream()
-    {
-        return MetaStream;
-    }
-
     public String GetUrl()
     {
-        return Url;
+        return TrackInfo.Path;
     }
 
     @Override
@@ -114,9 +95,9 @@ public class Song implements Parcelable
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(Url);
-        dest.writeString(Title);
-        dest.writeString(Author);
+        dest.writeString(TrackInfo.Path);
+        dest.writeString(TrackInfo.Title);
+        dest.writeString(TrackInfo.Author);
         dest.writeParcelable(Art, flags);
         dest.writeByte((byte) (HasArt ? 1 : 0));
     }

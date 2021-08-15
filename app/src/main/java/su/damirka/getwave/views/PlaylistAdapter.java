@@ -61,26 +61,6 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.SongVi
 
         public void Initialize(Song s, int CurrPlaying, int Position)
         {
-            if(!s.GetInitialized())
-            {
-                android.media.MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-                mmr.setDataSource(s.GetMetaStream());
-
-                String Title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-                String Author = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-
-                s.SetTitle(Title);
-                s.SetAuthor(Author);
-
-                byte[] data = mmr.getEmbeddedPicture();
-                if(data != null)
-                {
-                    Bitmap Art = BitmapFactory.decodeByteArray(data, 0, data.length);
-                    s.SetArt(Art);
-                }
-                s.SetInitialized();
-            }
-
             ViewName.setText(s.GetTitle());
             ViewAuthor.setText(s.GetAuthor());
 
@@ -108,9 +88,8 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.SongVi
         private void OnClick(@NonNull View view)
         {
             Bundle Msg = new Bundle();
-            Msg.putString("Msg", "PlayOther");
             Msg.putInt("Index", getLayoutPosition());
-            MainActivity.SendMsgToMusicService(Msg);
+            MainActivity.GetMediaController().getTransportControls().playFromMediaId("Index", Msg);
         }
 
         public SongViewHolder(@NonNull View itemView)
@@ -118,9 +97,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.SongVi
             super(itemView);
 
             ViewName = itemView.findViewById(R.id.SongNameSmall);
-            //ViewName.setTextColor(Color.parseColor("#f1f1f1"));
             ViewAuthor = itemView.findViewById(R.id.SongAuthorSmall);
-            //ViewAuthor.setTextColor(Color.parseColor("#f1f1f1"));
             ViewImage = itemView.findViewById(R.id.SongImageSmall);
 
             itemView.setOnClickListener(this::OnClick);

@@ -3,7 +3,12 @@ package windows;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.media.session.MediaSessionManager;
 import android.os.Bundle;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
+import android.text.style.UpdateLayout;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -12,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import su.damirka.getwave.Application;
@@ -103,9 +109,8 @@ public class WindowManager
             PlaylistView.SetPlaylist(Value.get());
 
             Bundle Msg = new Bundle();
-            Msg.putString("Msg", "Playlist");
             Msg.putParcelable("Playlist", Value.get());
-            MainActivity.SendMsgToMusicService(Msg);
+            MainActivity.GetMediaController().getTransportControls().prepareFromMediaId("Playlist", Msg);
         }
         PlaylistView.Show();
 
@@ -125,9 +130,10 @@ public class WindowManager
         CurWindow.Show();
     }
 
-    public Song GetSongByIndex(long Index)
+    public void UpdateDefaultPlaylist(Bundle Msg)
     {
-        return PlaylistView.GetSongByIndex(Index);
+        Playlist Playlist = Msg.getParcelable("Playlist");
+        PlaylistView.SetPlaylist(Playlist);
     }
 
     public void UpdateProgressBar(int Position, int Duration)
@@ -135,15 +141,12 @@ public class WindowManager
         SM.UpdateBar(Position, Duration);
     }
 
-    public void Update(long Index)
+    public void UpdateStates(PlaybackStateCompat States)
     {
-        SM.Update(PlaylistView.GetSongByIndex(Index));
-        PlaylistView.Update();
-    }
-
-    public void UpdateStates(Bundle States)
-    {
-        SM.UpdateStates(States.getBoolean("Playing"));
+        Bundle Info = States.getExtras();
+        SM.UpdateStates(States);
+        if(Objects.nonNull(PlaylistView))
+            PlaylistView.Update(Info.getLong("Index"));
     }
 
     private class SongMenu
@@ -182,13 +185,17 @@ public class WindowManager
             Visible = false;
         }
 
-        public void UpdateStates(boolean Playing)
+        public void UpdateStates(PlaybackStateCompat States)
         {
-            this.Playing = Playing;
+            this.Playing = States.getState() == PlaybackStateCompat.STATE_PLAYING;
             if(!Playing)
                 PlayBtn.setBackground(Play);
             else
                 PlayBtn.setBackground(Pause);
+
+            Song Song = States.getExtras().getParcelable("Song");
+            if(Objects.nonNull(Song))
+                Update(Song);
         }
 
         public void Show()
@@ -210,14 +217,6 @@ public class WindowManager
         public void OpenSongActivity(View v)
         {
             Intent SongActivity = new Intent(MA, su.damirka.getwave.activities.SongActivity.class);
-
-            Bundle Data = new Bundle();
-
-            Data.putByte("Playing", (byte) (Playing ? 1 : 0));
-            Data.putInt("Position", SongBar.getProgress());
-            Data.putInt("Duration", SongBar.getMax());
-            SongActivity.putExtras(Data);
-
             MA.startActivity(SongActivity);
         }
 
@@ -227,17 +226,13 @@ public class WindowManager
             {
                 PlayBtn.setBackground(Play);
                 Playing = false;
-                Bundle Msg = new Bundle();
-                Msg.putString("Msg", "Pause");
-                MainActivity.SendMsgToMusicService(Msg);
+                MainActivity.GetMediaController().getTransportControls().pause();
             }
             else
             {
                 PlayBtn.setBackground(Pause);
                 Playing = true;
-                Bundle Msg = new Bundle();
-                Msg.putString("Msg", "Play");
-                MainActivity.SendMsgToMusicService(Msg);
+                MainActivity.GetMediaController().getTransportControls().play();
             }
         }
 
@@ -247,7 +242,7 @@ public class WindowManager
             SongBar.setProgress(Position);
         }
 
-        public void Update(Song s)
+        private void Update(Song s)
         {
             CurrentSong = s;
             if(!Visible)

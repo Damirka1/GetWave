@@ -20,12 +20,12 @@ public class Playlist implements Parcelable
         this.Songs = Songs;
     }
 
-    public Playlist(String[] files)
+    public Playlist(Track[] tracks)
     {
-        Songs = new Song[files.length];
+        Songs = new Song[tracks.length];
 
-        for(int i = 0, j = files.length - 1; i < files.length; i++, j--)
-            Songs[i] = new Song(files[j]);
+        for(int i = 0, j = tracks.length - 1; i < tracks.length; i++, j--)
+            Songs[i] = new Song(tracks[j]);
     }
 
     protected Playlist(Parcel in) {

@@ -42,8 +42,9 @@ public class PlaylistView
         return Initialized;
     }
 
-    public void Update()
+    public void Update(long Index)
     {
+        Playlist.SetSelected(Index);
         for(int i = 0; i < Playlist.GetSize(); i++)
         {
             SongViewHolder View = (SongViewHolder)RView.findViewHolderForLayoutPosition(i);

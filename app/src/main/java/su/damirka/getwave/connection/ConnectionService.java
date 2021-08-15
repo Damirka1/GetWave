@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.Vector;
 
 import su.damirka.getwave.music.Playlist;
+import su.damirka.getwave.music.Track;
 
 public class ConnectionService implements Runnable
 {
@@ -12,7 +13,7 @@ public class ConnectionService implements Runnable
 
     private static Vector<Playlist> PlaylistDownloadingVector;
 
-    private static native String[] LoadAllMusicFromServer();
+    private static native Track[] LoadAllMusicFromServer();
 
     public static Optional<Playlist> GetDownloadedPlaylist(int Index)
     {
@@ -36,8 +37,8 @@ public class ConnectionService implements Runnable
     {
         int Size = PlaylistDownloadingVector.size();
         new Thread(() -> {
-            String[] Files = LoadAllMusicFromServer();
-            Playlist nPlaylist = new Playlist(Files);
+            Track[] Tracks = LoadAllMusicFromServer();
+            Playlist nPlaylist = new Playlist(Tracks);
             PlaylistDownloadingVector.add(nPlaylist);
         }).start();
         return Size;

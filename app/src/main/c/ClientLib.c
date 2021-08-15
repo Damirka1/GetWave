@@ -17,6 +17,7 @@ extern JNIEXPORT jboolean
 Java_su_damirka_getwave_Application_Connect(JNIEnv* env, jobject this)
 {
     cnt = Create();
+
     if(Connect(cnt, ip, port) == 0)
         return 1;
     else
@@ -27,6 +28,8 @@ Java_su_damirka_getwave_Application_Connect(JNIEnv* env, jobject this)
 extern JNIEXPORT jobjectArray
 Java_su_damirka_getwave_connection_ConnectionService_LoadAllMusicFromServer(JNIEnv* env, jobject this)
 {
+    CheckAndReconnect(cnt);
+
     strcpy(cnt->message, "gettracks");
 
     Send(cnt, cnt->command_buffer_size);
@@ -35,25 +38,35 @@ Java_su_damirka_getwave_connection_ConnectionService_LoadAllMusicFromServer(JNIE
         Release(Tracks);
 
     Tracks = Dispatch(cnt);
-    jclass stringClass = (*env)->FindClass(env, "java/lang/String");
-    jobjectArray FilesPath = (*env)->NewObjectArray(env, Tracks->Size, stringClass, NULL);
+    jclass trackClass = (*env)->FindClass(env, "su/damirka/getwave/music/Track");
+    jfieldID PathID = (*env)->GetFieldID(env, trackClass, "Path", "Ljava/lang/String;");
+    jfieldID TitleID = (*env)->GetFieldID(env, trackClass, "Title", "Ljava/lang/String;");
+    jfieldID AuthorID = (*env)->GetFieldID(env, trackClass, "Author", "Ljava/lang/String;");
+
+    jobjectArray JavaTracks = (*env)->NewObjectArray(env, Tracks->Size, trackClass, NULL);
 
     for(int i = 0; i < Tracks->Size; i++)
     {
-        char* str = malloc(1024);
-        memset(str, 0, 1024);
-        memcpy(str, Tracks->pData + (i * Tracks->DataSize), 1024);
+        struct Track* track = Get(Tracks, i);
 
-        (*env)->SetObjectArrayElement(env, FilesPath, i, (*env)->NewStringUTF(env, str));
-        free(str);
+        jmethodID constructor = (*env)->GetMethodID(env, trackClass, "<init>", "()V");
+        jobject instance = (*env)->NewObject(env, trackClass, constructor);
+
+        (*env)->SetObjectField(env, instance, PathID, (*env)->NewStringUTF(env, track->Path));
+        (*env)->SetObjectField(env, instance, TitleID, (*env)->NewStringUTF(env, track->Title));
+        (*env)->SetObjectField(env, instance, AuthorID, (*env)->NewStringUTF(env, track->Author));
+
+        (*env)->SetObjectArrayElement(env, JavaTracks, i, instance);
     }
 
-    return FilesPath;
+    return JavaTracks;
 }
 
 extern JNIEXPORT jbyteArray
 Java_su_damirka_getwave_music_StreamMediaDataSource_GetFileFromServer(JNIEnv* env, jobject this, jstring Path)
 {
+    CheckAndReconnect(cnt);
+
     const char* nativePath = (*env)->GetStringUTFChars(env, Path, 0);
     strcpy(cnt->message, "getfile ");
 
@@ -73,6 +86,8 @@ Java_su_damirka_getwave_music_StreamMediaDataSource_GetFileFromServer(JNIEnv* en
 extern JNIEXPORT jlong
 Java_su_damirka_getwave_music_StreamMediaDataSource_GetSizeofFile(JNIEnv* env, jobject this, jstring Path)
 {
+    CheckAndReconnect(cnt);
+
     const char* nativePath = (*env)->GetStringUTFChars(env, Path, 0);
     strcpy(cnt->message, "getsizeof ");
 
@@ -85,7 +100,10 @@ Java_su_damirka_getwave_music_StreamMediaDataSource_GetSizeofFile(JNIEnv* env, j
 }
 
 extern jint
-Java_su_damirka_getwave_music_StreamMediaDataSource_GetStreamFromServer(JNIEnv* env, jobject this, jstring Path, jbyteArray buffer, jint offset, jlong position, jint size) {
+Java_su_damirka_getwave_music_StreamMediaDataSource_GetStreamFromServer(JNIEnv* env, jobject this, jstring Path, jbyteArray buffer, jint offset, jlong position, jint size)
+{
+    CheckAndReconnect(cnt);
+
     char pos[12];
     char s[12];
     sprintf(pos, ";%lld;", position);
@@ -104,7 +122,6 @@ Java_su_damirka_getwave_music_StreamMediaDataSource_GetStreamFromServer(JNIEnv* 
     (*env)->ReleaseStringUTFChars(env, Path, nativePath);
 
     struct Vector *Stream = Dispatch(cnt);
-
 
     if (Stream != 0 && Stream->DataSize > 0) {
         (*env)->SetByteArrayRegion(env, buffer, offset, Stream->DataSize, Stream->pData);

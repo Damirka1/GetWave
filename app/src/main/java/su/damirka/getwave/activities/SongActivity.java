@@ -2,11 +2,18 @@ package su.damirka.getwave.activities;
 
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.RemoteException;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -21,6 +28,7 @@ import java.util.Objects;
 
 import su.damirka.getwave.Application;
 import su.damirka.getwave.R;
+import su.damirka.getwave.music.MusicService;
 import su.damirka.getwave.music.Song;
 
 public class SongActivity extends AppCompatActivity
@@ -90,10 +98,7 @@ public class SongActivity extends AppCompatActivity
                 public void onStopTrackingTouch(SeekBar seekBar)
                 {
                     BarCaptured = false;
-                    Bundle Msg = new Bundle();
-                    Msg.putString("Msg", "SeekTo");
-                    Msg.putInt("Position", seekBar.getProgress());
-                    MainActivity.SendMsgToMusicService(Msg);
+                    MediaController.getTransportControls().seekTo(seekBar.getProgress());
                 }
             });
 
@@ -101,11 +106,6 @@ public class SongActivity extends AppCompatActivity
             Pause = SA.getDrawable(R.drawable.pause);
 
             PlayButton.setBackground(Pause);
-
-            Bundle Data = sa.getIntent().getExtras();
-
-            Playing = Data.getByte("Playing") == 1;
-            UpdateSongBar(Data.getInt("Position"), Data.getInt("Duration"));
         }
 
         private void Update(Song s)
@@ -128,18 +128,20 @@ public class SongActivity extends AppCompatActivity
                 SongAuthor.setText(R.string.UndefinedAuthor);
         }
 
-        private void UpdateSongBar(int Position, int Duration)
+        private void UpdateSongBar(long Position, long Duration)
         {
             if(!BarCaptured)
-                SongBar.setProgress(Position);
-            SongBar.setMax(Duration);
+                SongBar.setProgress((int)Position);
+            SongBar.setMax((int)Duration);
         }
 
-        private void UpdateStates(boolean Playing, boolean Repeat)
+        private void UpdateStates(PlaybackStateCompat States)
         {
-            CB.setChecked(Repeat);
+            Bundle Msg = States.getExtras();
+            CB.setChecked(Msg.getBoolean("Repeat"));
+            Update(Msg.getParcelable("Song"));
 
-            this.Playing = Playing;
+            this.Playing = States.getState() == PlaybackStateCompat.STATE_PLAYING;;
 
             if(!Playing)
                 PlayButton.setBackground(Play);
@@ -157,51 +159,45 @@ public class SongActivity extends AppCompatActivity
             }
             else if(Id == R.id.PlayButton)
             {
-                Bundle Msg = new Bundle();
                 if(!Playing)
                 {
-                    Msg.putString("Msg", "Play");
-                    MainActivity.SendMsgToMusicService(Msg);
-                    PlayButton.setBackground(Pause);
+                    MediaController.getTransportControls().play();
                     Playing = true;
+                    PlayButton.setBackground(Pause);
                 }
                 else
                 {
-                    Msg.putString("Msg", "Pause");
-                    MainActivity.SendMsgToMusicService(Msg);
-                    PlayButton.setBackground(Play);
+                    MediaController.getTransportControls().pause();
                     Playing = false;
+                    PlayButton.setBackground(Play);
                 }
             }
             else if (Id == R.id.Repeat)
             {
-                Bundle Msg = new Bundle();
-                Msg.putString("Msg", "Repeat");
-                Msg.putBoolean("Repeat", CB.isChecked());
-                MainActivity.SendMsgToMusicService(Msg);
+                boolean flag = CB.isChecked();
+                if(flag)
+                    MediaController.getTransportControls().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE);
+                else
+                    MediaController.getTransportControls().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE);
             }
             else if (Id == R.id.NextButton)
             {
-                Bundle Msg = new Bundle();
-                Msg.putString("Msg", "PlayNext");
-                MainActivity.SendMsgToMusicService(Msg);
+                MediaController.getTransportControls().skipToNext();
             }
             else if (Id == R.id.PrevButton)
             {
-                Bundle Msg = new Bundle();
                 if(SongBar.getProgress() > 5000) // 5 seconds
-                {
-                    Msg.putString("Msg", "SeekTo");
-                    Msg.putInt("Position", 0);
-                }
+                    MediaController.getTransportControls().seekTo(0);
                 else
-                    Msg.putString("Msg", "PlayPrev");
-                MainActivity.SendMsgToMusicService(Msg);
+                    MediaController.getTransportControls().skipToPrevious();
             }
         }
     }
 
     private SongWindow SW;
+
+    private static MusicService.PlayerServiceBinder playerServiceBinder;
+    private static MediaControllerCompat MediaController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -210,43 +206,64 @@ public class SongActivity extends AppCompatActivity
         setContentView(R.layout.activity_song);
 
         SW = new SongWindow(this);
-    }
 
-    BroadcastReceiver br = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
+        bindService(new Intent(this, MusicService.class), new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                playerServiceBinder = (MusicService.PlayerServiceBinder) service;
+                try {
+                    MediaController = new MediaControllerCompat(
+                            SongActivity.this, playerServiceBinder.getMediaSessionToken());
+                    MediaController.registerCallback(
+                            new MediaControllerCompat.Callback() {
+                                @Override
+                                public void onMetadataChanged(MediaMetadataCompat metadata)
+                                {
+                                    super.onMetadataChanged(metadata);
+                                }
 
-            Bundle Msg = intent.getExtras();
+                                @Override
+                                public void onPlaybackStateChanged(PlaybackStateCompat state)
+                                {
+                                    if (state == null)
+                                        return;
 
-            if(Objects.isNull(Msg))
-                return;
+                                    if(Objects.nonNull(state.getExtras()))
+                                    {
+                                        Bundle Msg = state.getExtras();
 
-            try {
-                switch (Msg.getString("Msg"))
-                {
-                    case "UpdateUI":
-                        SW.Update(MainActivity.GetApp().GetSongByIndex(Msg.getInt("Index")));
-                        break;
-                    case "Playing":
-                        SW.UpdateSongBar(Msg.getInt("Position"), Msg.getInt("Duration"));
-                        break;
-                    case "CurrentState":
-                        SW.UpdateStates(Msg.getBoolean("Playing"), Msg.getBoolean("Repeat"));
-                        break;
+                                        if(Objects.nonNull(Msg.getString("Msg")))
+                                        {
+                                            String Info = Msg.getString("Msg");
+                                            if(Info.equals("UpdateProgressBar"))
+                                                SW.UpdateSongBar(Msg.getLong("Position"), Msg.getLong("Duration"));
+                                            return;
+                                        }
+                                    }
+
+                                    SW.UpdateStates(state);
+                                }
+                            }
+                    );
                 }
-            } catch (NullPointerException nullPointerException)
-            {
-                nullPointerException.printStackTrace();
+                catch (RemoteException e) {
+                    MediaController = null;
+                }
             }
-        }
-    };
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                playerServiceBinder = null;
+                MediaController = null;
+            }
+        }, BIND_AUTO_CREATE);
+
+    }
 
     @Override
     protected void onResume()
     {
         super.onResume();
-        IntentFilter recv = new IntentFilter("UpdateUI");
-        this.registerReceiver(br, recv);
         MainActivity.GetApp().Resume();
     }
 
@@ -257,9 +274,9 @@ public class SongActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onPause() {
+    protected void onPause()
+    {
         super.onPause();
-        this.unregisterReceiver(br);
         MainActivity.GetApp().Pause();
     }
 

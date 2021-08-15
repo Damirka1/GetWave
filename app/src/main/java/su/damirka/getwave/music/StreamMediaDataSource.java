@@ -1,10 +1,6 @@
 package su.damirka.getwave.music;
 
 import android.media.MediaDataSource;
-import android.support.v4.app.INotificationSideChannel;
-
-import java.io.InputStream;
-import java.util.LinkedList;
 import java.util.Objects;
 
 public class StreamMediaDataSource extends MediaDataSource
@@ -25,11 +21,21 @@ public class StreamMediaDataSource extends MediaDataSource
     public StreamMediaDataSource(String Path)
     {
         FilePath = Path;
-        ChunkSize = 32768;
+        ChunkSize = 1024000;
         Downloader = null;
         Iterator = 0;
         FileSize = -1;
         Closed = false;
+    }
+
+    public boolean IsDownloaded()
+    {
+        return Iterator == FileSize;
+    }
+
+    public long GetIterator()
+    {
+        return Iterator;
     }
 
     public void PrepareASync()
@@ -37,7 +43,7 @@ public class StreamMediaDataSource extends MediaDataSource
         while(Running)
         {
             try {
-                Thread.sleep(1);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -90,7 +96,7 @@ public class StreamMediaDataSource extends MediaDataSource
         while (Objects.isNull(pData) || position + size > Iterator)
         {
             try {
-                Thread.sleep(50);
+                Thread.sleep(1000);
             } catch (InterruptedException interruptedException) {
                 interruptedException.printStackTrace();
             }
@@ -134,6 +140,8 @@ public class StreamMediaDataSource extends MediaDataSource
             try {
                 Downloader.join();
                 Downloader = null;
+                pData = null;
+                Iterator = 0;
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -143,6 +151,8 @@ public class StreamMediaDataSource extends MediaDataSource
     @Override
     public long getSize()
     {
+        if(FileSize > 0)
+            return FileSize;
         return 0L;
     }
 

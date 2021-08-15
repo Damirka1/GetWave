@@ -2,9 +2,14 @@ package su.damirka.getwave;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
+
+import java.util.Objects;
 
 import su.damirka.getwave.activities.MainActivity;
 import su.damirka.getwave.connection.ConnectionService;
+import su.damirka.getwave.music.Playlist;
 import su.damirka.getwave.music.Song;
 import windows.WindowManager;
 
@@ -18,8 +23,8 @@ public class Application
     private final ConnectionService ConnectionService;
 
     private final Thread UpdateThread;
-    private boolean Sleep;
     private boolean Running;
+    private boolean Sleep;
 
     private native boolean Connect();
 
@@ -29,92 +34,37 @@ public class Application
         if(!Connect())
             throw new Exception("Can't connect to server\n");
 
-        Running = true;
-        Sleep = false;
-
-        UpdateThread = new Thread(this::Update);
-
         ConnectionService = new ConnectionService();
         WM = new WindowManager(MA);
         this.MA = MA;
 
+        Sleep = false;
+        Running = true;
+        UpdateThread = new Thread(this::Update);
         UpdateThread.start();
-    }
-
-    public void UpdateSongMenu(long Index)
-    {
-        WM.Update(Index);
-    }
-
-    public void UpdateProgressbar(int Position, int Duration)
-    {
-        WM.UpdateProgressBar(Position, Duration);
-    }
-
-    public void UpdateAppStates(Bundle States)
-    {
-        WM.UpdateStates(States);
     }
 
     private void Update()
     {
-        System.out.println("UI thread started");
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ignored) {}
+
         while(Running)
         {
             while(Sleep)
             {
-                try
-                {
-                    Thread.sleep(500);
-                }
-                catch (InterruptedException interruptedException)
-                {
-                    interruptedException.printStackTrace();
-                }
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ignored) {}
             }
 
-            try
-            {
-                Thread.sleep(250);
-            }
-            catch (InterruptedException interruptedException)
-            {
-                interruptedException.printStackTrace();
-            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ignored) {}
 
-            if(WM.IsPlaying())
-            {
-                Bundle Msg = new Bundle();
-                Msg.putString("Msg", "UpdateProgressBar");
-                MainActivity.SendMsgToMusicService(Msg);
-            }
+            MainActivity.GetMediaController().getTransportControls().sendCustomAction("UpdateProgressBar", null);
         }
-    }
-
-    public void SendMsgToMusicService(Bundle Msg, Intent MusicIntent)
-    {
-        MusicIntent.putExtras(Msg);
-        MA.startForegroundService(MusicIntent);
-    }
-
-    public Song GetSongByIndex(long Index)
-    {
-        return WM.GetSongByIndex(Index);
-    }
-
-    public void Resume()
-    {
-        if(Sleep)
-        {
-            Bundle Msg = new Bundle();
-            Msg.putString("Msg", "UpdateUI");
-            MainActivity.SendMsgToMusicService(Msg);
-
-            Msg = new Bundle();
-            Msg.putString("Msg", "GetStates");
-            MainActivity.SendMsgToMusicService(Msg);
-        }
-        Sleep = false;
     }
 
     public void Pause()
@@ -122,16 +72,35 @@ public class Application
         Sleep = true;
     }
 
+    public void Resume()
+    {
+        Sleep = false;
+        if(Objects.nonNull(MainActivity.GetMediaController()))
+            MainActivity.GetMediaController().getTransportControls().sendCustomAction("UpdateStates", null);
+    }
+
+    public void UpdateProgressbar(long Position, long Duration)
+    {
+        WM.UpdateProgressBar((int) Position, (int) Duration);
+    }
+
+    public void UpdateDefaultPlaylist(Bundle Msg)
+    {
+        WM.UpdateDefaultPlaylist(Msg);
+    }
+
+    public void UpdateAppStates(PlaybackStateCompat States)
+    {
+        WM.UpdateStates(States);
+    }
+
     public void Exit() {
         WM.Release();
         Running = false;
         Sleep = false;
-
         try {
             UpdateThread.join();
-        } catch (InterruptedException interruptedException) {
-            interruptedException.printStackTrace();
-        }
+        } catch (InterruptedException ignore) {}
 
     }
 

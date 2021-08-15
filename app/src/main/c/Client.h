@@ -12,7 +12,7 @@ struct Connection
 	struct pollfd poll_in;
 	struct sockaddr_in s_addr;
 	char* ip;
-	short port;
+	char* port;
 
 	int buffer_size;
 	int command_buffer_size;
@@ -21,7 +21,7 @@ struct Connection
 };
 
 
-int CheckConnection(struct Connection* cnt);
+void CheckAndReconnect(struct Connection* cnt);
 
 struct Connection* Create();
 

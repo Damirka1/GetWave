@@ -41,26 +41,30 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="06dcbf46-bf03-4ef4-9864-63cb08cfcc6c" name="Default Changelist" comment="This much better">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/windows/HeaderView.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/music/Track.java" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/app/src/main/res/font/cantarell.ttf" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/app/src/main/res/font/marcellus.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/home_header_view.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/app/GetWave.app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/GetWave.app.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/c/Client.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/c/Client.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/c/Client.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/c/Client.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/c/ClientLib.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/c/ClientLib.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/Application.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/Application.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/windows/WindowView.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/WindowManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/windows/WindowManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/activities/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/activities/MainActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/activities/SongActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/activities/SongActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/connection/ConnectionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/connection/ConnectionService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/music/MusicPlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/music/MusicPlayer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/music/MusicService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/music/MusicService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/music/Playlist.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/music/Playlist.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/music/Song.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/music/Song.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/music/StreamMediaDataSource.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/music/StreamMediaDataSource.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/views/PlaylistAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/views/PlaylistAdapter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_song.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_song.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/song_view.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/song_view.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/views/PlaylistView.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/views/PlaylistView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/windows/WindowManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/windows/WindowManager.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,9 +96,9 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Interface" />
-        <option value="resourceFile" />
-        <option value="Class" />
         <option value="layoutResourceFile" />
+        <option value="Class" />
+        <option value="resourceFile" />
       </list>
     </option>
   </component>
@@ -271,7 +275,9 @@
     </ignored-roots>
     <MESSAGE value="This much better" />
     <MESSAGE value="Big update. Added client system that downloading music from server." />
-    <option name="LAST_COMMIT_MESSAGE" value="Big update. Added client system that downloading music from server." />
+    <MESSAGE value="Update design" />
+    <MESSAGE value="workspace.xml" />
+    <option name="LAST_COMMIT_MESSAGE" value="workspace.xml" />
   </component>
   <component name="WindowStateProjectService">
     <state x="245" y="185" key="#PSD" timestamp="1628095368183">
@@ -290,10 +296,10 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="420" y="251" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1440.900@0.0.1440.900" timestamp="1628093430056" />
-    <state x="525" y="156" width="374" height="586" key="#com.intellij.ide.util.MemberChooser" timestamp="1628010084345">
+    <state x="525" y="156" width="374" height="586" key="#com.intellij.ide.util.MemberChooser" timestamp="1629032237493">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="525" y="156" width="374" height="586" key="#com.intellij.ide.util.MemberChooser/0.0.1440.900@0.0.1440.900" timestamp="1628010084345" />
+    <state x="525" y="156" width="374" height="586" key="#com.intellij.ide.util.MemberChooser/0.0.1440.900@0.0.1440.900" timestamp="1629032237493" />
     <state x="402" y="287" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1628438836413">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
@@ -302,10 +308,10 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="62" y="63" width="1256" height="716" key="AVDManager/0.0.1440.900@0.0.1440.900" timestamp="1628100582299" />
-    <state x="300" y="204" key="AndroidCreateResourceFileDialog" timestamp="1622377563533">
+    <state x="300" y="204" key="AndroidCreateResourceFileDialog" timestamp="1628967545545">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="300" y="204" key="AndroidCreateResourceFileDialog/0.0.1440.900@0.0.1440.900" timestamp="1622377563533" />
+    <state x="300" y="204" key="AndroidCreateResourceFileDialog/0.0.1440.900@0.0.1440.900" timestamp="1628967545545" />
     <state x="478" y="196" width="473" height="506" key="AndroidProcessChooserDialog" timestamp="1628268912475">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
@@ -314,62 +320,62 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="270" y="0" key="CommitChangelistDialog2/0.0.1440.900@0.0.1440.900" timestamp="1622825732535" />
-    <state width="489" height="526" key="DebuggerActiveHint" timestamp="1628438305867">
+    <state width="489" height="526" key="DebuggerActiveHint" timestamp="1628969911674">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="489" height="526" key="DebuggerActiveHint/0.0.1440.900@0.0.1440.900" timestamp="1628438305867" />
+    <state width="489" height="526" key="DebuggerActiveHint/0.0.1440.900@0.0.1440.900" timestamp="1628969911674" />
     <state x="389" y="208" width="771" height="483" key="Downloadable.Font.Dialog.Size" timestamp="1627142106880">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="389" y="208" width="771" height="483" key="Downloadable.Font.Dialog.Size/0.0.1440.900@0.0.1440.900" timestamp="1627142106880" />
-    <state x="500" y="177" width="424" height="513" key="FileChooserDialogImpl" timestamp="1627924926041">
+    <state x="500" y="177" width="424" height="513" key="FileChooserDialogImpl" timestamp="1628967560250">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="500" y="177" width="424" height="513" key="FileChooserDialogImpl/0.0.1440.900@0.0.1440.900" timestamp="1627924926041" />
-    <state x="560" y="374" key="Github.Dialog.Accounts.Choose" timestamp="1628431832597">
+    <state x="500" y="177" width="424" height="513" key="FileChooserDialogImpl/0.0.1440.900@0.0.1440.900" timestamp="1628967560250" />
+    <state x="560" y="374" key="Github.Dialog.Accounts.Choose" timestamp="1628529880880">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="560" y="374" key="Github.Dialog.Accounts.Choose/0.0.1440.900@0.0.1440.900" timestamp="1628431832597" />
-    <state width="1394" height="183" key="GridCell.Tab.0.bottom" timestamp="1628499998251">
+    <state x="560" y="374" key="Github.Dialog.Accounts.Choose/0.0.1440.900@0.0.1440.900" timestamp="1628529880880" />
+    <state width="1394" height="191" key="GridCell.Tab.0.bottom" timestamp="1629032425788">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1394" height="183" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1628499998251" />
-    <state width="1394" height="183" key="GridCell.Tab.0.center" timestamp="1628499998251">
+    <state width="1394" height="191" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1629032425788" />
+    <state width="1394" height="191" key="GridCell.Tab.0.center" timestamp="1629032425787">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1394" height="183" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1628499998251" />
-    <state width="1394" height="183" key="GridCell.Tab.0.left" timestamp="1628499998251">
+    <state width="1394" height="191" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1629032425787" />
+    <state width="1394" height="191" key="GridCell.Tab.0.left" timestamp="1629032425785">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1394" height="183" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1628499998251" />
-    <state width="1394" height="183" key="GridCell.Tab.0.right" timestamp="1628499998251">
+    <state width="1394" height="191" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1629032425785" />
+    <state width="1394" height="191" key="GridCell.Tab.0.right" timestamp="1629032425787">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1394" height="183" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1628499998251" />
-    <state width="1394" height="183" key="GridCell.Tab.1.bottom" timestamp="1628499998252">
+    <state width="1394" height="191" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1629032425787" />
+    <state width="1394" height="191" key="GridCell.Tab.1.bottom" timestamp="1629032421492">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1394" height="183" key="GridCell.Tab.1.bottom/0.0.1440.900@0.0.1440.900" timestamp="1628499998252" />
-    <state width="1394" height="183" key="GridCell.Tab.1.center" timestamp="1628499998252">
+    <state width="1394" height="191" key="GridCell.Tab.1.bottom/0.0.1440.900@0.0.1440.900" timestamp="1629032421492" />
+    <state width="1394" height="191" key="GridCell.Tab.1.center" timestamp="1629032421491">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1394" height="183" key="GridCell.Tab.1.center/0.0.1440.900@0.0.1440.900" timestamp="1628499998252" />
-    <state width="1394" height="183" key="GridCell.Tab.1.left" timestamp="1628499998252">
+    <state width="1394" height="191" key="GridCell.Tab.1.center/0.0.1440.900@0.0.1440.900" timestamp="1629032421491" />
+    <state width="1394" height="191" key="GridCell.Tab.1.left" timestamp="1629032421491">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1394" height="183" key="GridCell.Tab.1.left/0.0.1440.900@0.0.1440.900" timestamp="1628499998252" />
-    <state width="1394" height="183" key="GridCell.Tab.1.right" timestamp="1628499998252">
+    <state width="1394" height="191" key="GridCell.Tab.1.left/0.0.1440.900@0.0.1440.900" timestamp="1629032421491" />
+    <state width="1394" height="191" key="GridCell.Tab.1.right" timestamp="1629032421491">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1394" height="183" key="GridCell.Tab.1.right/0.0.1440.900@0.0.1440.900" timestamp="1628499998252" />
+    <state width="1394" height="191" key="GridCell.Tab.1.right/0.0.1440.900@0.0.1440.900" timestamp="1629032421491" />
     <state x="194" y="91" width="1012" height="730" key="SettingsEditor" timestamp="1627924987355">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="194" y="91" width="1012" height="730" key="SettingsEditor/0.0.1440.900@0.0.1440.900" timestamp="1627924987355" />
-    <state x="320" y="186" key="Vcs.Push.Dialog.v2" timestamp="1628431812078">
+    <state x="320" y="186" key="Vcs.Push.Dialog.v2" timestamp="1628529878062">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="320" y="186" key="Vcs.Push.Dialog.v2/0.0.1440.900@0.0.1440.900" timestamp="1628431812078" />
+    <state x="320" y="186" key="Vcs.Push.Dialog.v2/0.0.1440.900@0.0.1440.900" timestamp="1628529878062" />
     <state x="378" y="68" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1627673708080">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
@@ -386,13 +392,13 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="485" y="194" key="refactoring.ChangeSignatureDialog/0.0.1440.900@0.0.1440.900" timestamp="1622740929550" />
-    <state x="384" y="202" key="run.anything.popup" timestamp="1628185341680">
+    <state x="384" y="202" key="run.anything.popup" timestamp="1629010170947">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="384" y="202" key="run.anything.popup/0.0.1440.900@0.0.1440.900" timestamp="1628185341680" />
-    <state x="383" y="190" width="672" height="678" key="search.everywhere.popup" timestamp="1628099028395">
+    <state x="384" y="202" key="run.anything.popup/0.0.1440.900@0.0.1440.900" timestamp="1629010170947" />
+    <state x="383" y="190" width="672" height="678" key="search.everywhere.popup" timestamp="1629015992542">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="383" y="190" width="672" height="678" key="search.everywhere.popup/0.0.1440.900@0.0.1440.900" timestamp="1628099028395" />
+    <state x="383" y="190" width="672" height="678" key="search.everywhere.popup/0.0.1440.900@0.0.1440.900" timestamp="1629015992542" />
   </component>
 </project>

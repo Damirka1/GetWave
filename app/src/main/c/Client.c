@@ -13,7 +13,7 @@
 struct Connection* Create()
 {
 	struct Connection* cnt = malloc(sizeof(struct Connection));
-	cnt->buffer_size = 131072; // 128 kb.
+	cnt->buffer_size = 1024000; // 1 mb.
 	cnt->command_buffer_size = 2048; // 2kb.
 	cnt->message = malloc(cnt->buffer_size);
 	cnt->result = malloc(cnt->buffer_size);
@@ -21,6 +21,14 @@ struct Connection* Create()
     memset(cnt->result, 0, cnt->buffer_size);
 	cnt->ip = 0;
 	return cnt;
+}
+
+void CheckAndReconnect(struct Connection* cnt)
+{
+    const char* msg = "TestConnection";
+    strcpy(cnt->message, msg);
+    if(Send(cnt, cnt->command_buffer_size) == -1)
+        Connect(cnt, cnt->ip, cnt->port);
 }
 
 int Connect(struct Connection* cnt, char* ip, const char* port)
@@ -47,10 +55,8 @@ int Connect(struct Connection* cnt, char* ip, const char* port)
 		return -1;
 	}
 
-	//fcntl(cnt->socket, F_SETFL, O_NONBLOCK);
-
-    cnt->poll_in.fd = cnt->socket;
-	cnt->poll_in.events = POLLIN;
+	cnt->ip = ip;
+	cnt->port = port;
 
 	return 0;
 }
