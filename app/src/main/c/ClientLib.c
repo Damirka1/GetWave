@@ -8,7 +8,7 @@
 #include <android/log.h>
 
 static struct Connection* cnt;
-//static char* ip = "37.151.231.229";
+//static char* ip = "2.135.158.175";
 static char* ip = "192.168.1.30";
 static char* port = "25565";
 static struct Vector* Tracks = NULL;
@@ -39,6 +39,7 @@ Java_su_damirka_getwave_connection_ConnectionService_LoadAllMusicFromServer(JNIE
 
     Tracks = Dispatch(cnt);
     jclass trackClass = (*env)->FindClass(env, "su/damirka/getwave/music/Track");
+    jfieldID IdID = (*env)->GetFieldID(env, trackClass, "Id", "I");
     jfieldID PathID = (*env)->GetFieldID(env, trackClass, "Path", "Ljava/lang/String;");
     jfieldID TitleID = (*env)->GetFieldID(env, trackClass, "Title", "Ljava/lang/String;");
     jfieldID AuthorID = (*env)->GetFieldID(env, trackClass, "Author", "Ljava/lang/String;");
@@ -52,6 +53,7 @@ Java_su_damirka_getwave_connection_ConnectionService_LoadAllMusicFromServer(JNIE
         jmethodID constructor = (*env)->GetMethodID(env, trackClass, "<init>", "()V");
         jobject instance = (*env)->NewObject(env, trackClass, constructor);
 
+        (*env)->SetIntField(env, instance, IdID, track->Id);
         (*env)->SetObjectField(env, instance, PathID, (*env)->NewStringUTF(env, track->Path));
         (*env)->SetObjectField(env, instance, TitleID, (*env)->NewStringUTF(env, track->Title));
         (*env)->SetObjectField(env, instance, AuthorID, (*env)->NewStringUTF(env, track->Author));

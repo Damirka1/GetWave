@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/wp5576702"
+    android:background="@drawable/background"
     tools:context=".activities.MainActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -164,8 +164,8 @@
             android:id="@+id/LibText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
             android:layout_marginStart="10dp"
+            android:layout_marginTop="32dp"
             android:fontFamily="sans-serif-thin"
             android:text="@string/Library"
             android:textColor="#bfbfbf"
@@ -178,8 +178,8 @@
             android:id="@+id/LibButton"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_marginTop="6dp"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="6dp"
             android:background="@drawable/libunclicked"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/FindButton"

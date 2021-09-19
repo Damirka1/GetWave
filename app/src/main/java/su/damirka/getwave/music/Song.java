@@ -88,6 +88,11 @@ public class Song implements Parcelable
         return TrackInfo.Path;
     }
 
+    public Track GetTrack()
+    {
+        return TrackInfo;
+    }
+
     @Override
     public int describeContents() {
         return 0;

@@ -1,16 +1,14 @@
 package su.damirka.getwave;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import java.util.Objects;
 
 import su.damirka.getwave.activities.MainActivity;
 import su.damirka.getwave.connection.ConnectionService;
-import su.damirka.getwave.music.Playlist;
-import su.damirka.getwave.music.Song;
+import su.damirka.getwave.files.FileManager;
+import su.damirka.getwave.views.playlists.Adapter;
 import windows.WindowManager;
 
 public class Application
@@ -18,6 +16,7 @@ public class Application
 //    public String ip = "192.168.1.30";
 //    public String port = "25565";
 
+    private final FileManager FM;
     private final WindowManager WM;
     private final MainActivity MA;
     private final ConnectionService ConnectionService;
@@ -34,6 +33,8 @@ public class Application
         if(!Connect())
             throw new Exception("Can't connect to server\n");
 
+        FM = new FileManager(MA);
+
         ConnectionService = new ConnectionService();
         WM = new WindowManager(MA);
         this.MA = MA;
@@ -42,6 +43,11 @@ public class Application
         Running = true;
         UpdateThread = new Thread(this::Update);
         UpdateThread.start();
+    }
+
+    public FileManager GetFileManager()
+    {
+        return FM;
     }
 
     private void Update()
@@ -84,14 +90,24 @@ public class Application
         WM.UpdateProgressBar((int) Position, (int) Duration);
     }
 
-    public void UpdateDefaultPlaylist(Bundle Msg)
+    private Adapter CurrentPlaylist;
+
+    public void SetPlaylist(Adapter playlist)
     {
-        WM.UpdateDefaultPlaylist(Msg);
+        if(Objects.isNull(CurrentPlaylist) || !playlist.GetName().equals(CurrentPlaylist.GetName()) || playlist.GetCount() != CurrentPlaylist.GetCount())
+        {
+            Bundle Msg = new Bundle();
+            Msg.putParcelable("Playlist", playlist.GetPlaylist());
+            MainActivity.GetMediaController().getTransportControls().prepareFromMediaId("Playlist", Msg);
+            CurrentPlaylist = playlist;
+        }
     }
 
     public void UpdateAppStates(PlaybackStateCompat States)
     {
         WM.UpdateStates(States);
+        if(Objects.nonNull(CurrentPlaylist))
+            CurrentPlaylist.Update((int)States.getExtras().getLong("Index"));
     }
 
     public void Exit() {

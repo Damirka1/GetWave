@@ -69,8 +69,8 @@ public class MainActivity extends AppCompatActivity
                                                 String Info = Msg.getString("Msg");
                                                 if(Info.equals("UpdateProgressBar"))
                                                     App.UpdateProgressbar(Msg.getLong("Position"), Msg.getLong("Duration"));
-                                                else if(Info.equals("UpdatePlayList"))
-                                                    App.UpdateDefaultPlaylist(Msg);
+//                                                else if(Info.equals("UpdatePlayList"))
+//                                                    App.UpdateDefaultPlaylist(Msg);
                                                 return;
                                             }
                                         }
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity
             }, BIND_AUTO_CREATE);
 
             Intent MusicServiceIntent = new Intent(ApplicationContext, _MusicService.getClass());
-            startForegroundService(MusicServiceIntent);
+            startService(MusicServiceIntent);
 
             if(Objects.nonNull(MediaController))
                 MediaController.getTransportControls().sendCustomAction("UpdatePlayList", null);
@@ -125,8 +125,6 @@ public class MainActivity extends AppCompatActivity
     protected void onStart()
     {
         super.onStart();
-
-
     }
 
     @Override

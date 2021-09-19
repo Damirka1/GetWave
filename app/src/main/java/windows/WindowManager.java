@@ -3,12 +3,7 @@ package windows;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.media.session.MediaSessionManager;
-import android.os.Bundle;
-import android.support.v4.media.session.MediaControllerCompat;
-import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.text.style.UpdateLayout;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -18,15 +13,14 @@ import android.widget.TextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import java.util.Objects;
-import java.util.Optional;
 
-import su.damirka.getwave.Application;
 import su.damirka.getwave.R;
 import su.damirka.getwave.activities.MainActivity;
-import su.damirka.getwave.connection.ConnectionService;
-import su.damirka.getwave.music.Playlist;
 import su.damirka.getwave.music.Song;
-import su.damirka.getwave.views.PlaylistView;
+import su.damirka.getwave.views.playlists.find.FindLibManager;
+import su.damirka.getwave.views.playlists.PlaylistManager;
+import su.damirka.getwave.views.playlists.home.HomeLibManager;
+import su.damirka.getwave.views.playlists.mylibrary.MyLibManager;
 
 public class WindowManager
 {
@@ -36,8 +30,11 @@ public class WindowManager
     private final SongMenu SM;
 
     private WindowView CurWindow;
+    private PlaylistManager CurrManager;
 
-    private PlaylistView PlaylistView;
+    private HomeLibManager Home;
+    private FindLibManager Find;
+    private MyLibManager Lib;
 
     public WindowManager(MainActivity MA)
     {
@@ -53,7 +50,9 @@ public class WindowManager
         SM = new SongMenu();
         MainLayout = MA.findViewById(R.id.MainLayout);
 
-        PlaylistView = new PlaylistView(null, MA.getApplicationContext(), MainLayout);
+        Home = new HomeLibManager(MainLayout);
+        CurrManager = Home;
+        CurrManager.Show();
     }
 
     public void Release()
@@ -69,71 +68,50 @@ public class WindowManager
         CurWindow = null;
     }
 
-    public boolean IsPlaying()
-    {
-        return SM.Playing;
-    }
-
     public void HomeClick(View v)
     {
-        HidePlaylist();
+        CurrManager.Hide();
         CurWindow.Hide();
         CurWindow = new HomeWindowView(MA);
+        CurrManager = Home;
         CurWindow.Show();
+        CurrManager.Show();
     }
 
     public void FindClick(View v)
     {
+        CurrManager.Hide();
         CurWindow.Hide();
         CurWindow = new FindWindowView(MA);
+
+        CurWindow.SetViewToHeader(R.layout.default_header_view);
+        View HeaderView = CurWindow.GetHeaderView();
+
+        TextView TextView = HeaderView.findViewById(R.id.Text);
+        TextView.setTextSize(24);
+        TextView.setText(R.string.MusicFromServer);
+
+        if(Objects.isNull(Find))
+            Find = new FindLibManager(MainLayout);
+
+        CurrManager = Find;
+
         CurWindow.Show();
-
-        if(!PlaylistView.IsInitialized())
-        {
-            int Index = ConnectionService.StartDownloadingPlaylistWithAllMusic();
-
-            Optional<Playlist> Value = ConnectionService.GetDownloadedPlaylist(Index);
-            while(!Value.isPresent())
-            {
-                try
-                {
-                    Thread.sleep(100);
-                    Value = ConnectionService.GetDownloadedPlaylist(Index);
-                }
-                catch (InterruptedException interruptedException)
-                {
-                    interruptedException.printStackTrace();
-                }
-            }
-
-            PlaylistView.SetPlaylist(Value.get());
-
-            Bundle Msg = new Bundle();
-            Msg.putParcelable("Playlist", Value.get());
-            MainActivity.GetMediaController().getTransportControls().prepareFromMediaId("Playlist", Msg);
-        }
-        PlaylistView.Show();
-
-    }
-
-    private void HidePlaylist()
-    {
-        if(PlaylistView.IsInitialized())
-            PlaylistView.Hide();
+        CurrManager.Show();
     }
 
     public void LibClick(View v)
     {
-        HidePlaylist();
+        CurrManager.Hide();
         CurWindow.Hide();
         CurWindow = new LibWindowView(MA);
-        CurWindow.Show();
-    }
 
-    public void UpdateDefaultPlaylist(Bundle Msg)
-    {
-        Playlist Playlist = Msg.getParcelable("Playlist");
-        PlaylistView.SetPlaylist(Playlist);
+        if(Objects.isNull(Lib))
+            Lib = new MyLibManager(MainLayout);
+
+        CurrManager = Lib;
+        CurWindow.Show();
+        CurrManager.Show();
     }
 
     public void UpdateProgressBar(int Position, int Duration)
@@ -143,10 +121,7 @@ public class WindowManager
 
     public void UpdateStates(PlaybackStateCompat States)
     {
-        Bundle Info = States.getExtras();
         SM.UpdateStates(States);
-        if(Objects.nonNull(PlaylistView))
-            PlaylistView.Update(Info.getLong("Index"));
     }
 
     private class SongMenu

@@ -116,14 +116,22 @@ public class MusicPlayer implements MediaPlayer.OnCompletionListener, MediaPlaye
 
         if(Objects.nonNull(CurrentStream))
         {
-            if(!CurrentStream.Equals(another))
-            {
-                CurrentStream.CloseAsync();
-                CurrentStream = another;
-            }
+            CurrentStream.CloseAsync();
+            CurrentStream = another;
         }
         else
             CurrentStream = another;
+
+//        if(Objects.nonNull(CurrentStream))
+//        {
+//            if(!CurrentStream.Equals(another))
+//            {
+//                CurrentStream.CloseAsync();
+//                CurrentStream = another;
+//            }
+//        }
+//        else
+//            CurrentStream = another;
 
         CurrentStream.PrepareASync();
         MP.setDataSource(CurrentStream);

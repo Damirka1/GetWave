@@ -25,7 +25,7 @@ public class StreamMediaDataSource extends MediaDataSource
         Downloader = null;
         Iterator = 0;
         FileSize = -1;
-        Closed = false;
+        Closed = true;
     }
 
     public boolean IsDownloaded()
@@ -40,7 +40,7 @@ public class StreamMediaDataSource extends MediaDataSource
 
     public void PrepareASync()
     {
-        while(Running)
+        while(!Closed)
         {
             try {
                 Thread.sleep(10);

@@ -4,14 +4,19 @@ plugins {
 
 android {
     compileSdkVersion 28
-    buildToolsVersion "30.0.3"
+    buildToolsVersion '31.0.0'
+
+    lintOptions {
+        checkReleaseBuilds false
+    }
 
     defaultConfig {
         applicationId "su.damirka.getwave"
         minSdkVersion 28
+        //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 28
         versionCode 1
-        versionName "1.01"
+        versionName "1.2"
 
         externalNativeBuild {
             ndk {
@@ -35,7 +40,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    ndkVersion '22.1.7171670'
+    ndkVersion '23.0.7599858'
 }
 
 dependencies {
@@ -47,4 +52,5 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
     implementation 'com.android.support:support-media-compat:28.0.0'
+    implementation 'androidx.gridlayout:gridlayout:1.0.0'
 }

@@ -16,6 +16,7 @@ import android.media.AudioManager;
 import android.media.MediaMetadata;
 import android.media.browse.MediaBrowser;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ResultReceiver;
@@ -26,6 +27,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationCompat.Builder;
 import androidx.media.session.MediaButtonReceiver;
@@ -41,7 +43,7 @@ public class MusicService extends MediaBrowserService implements AudioManager.On
     private MusicPlayer _MusicPlayer;
 
     private Notification _Notification;
-    private int NotificationId = 123;
+    private int NotificationId = 1337;
     private NotificationManager _NotificationManager;
 
     private final PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder()
@@ -289,7 +291,6 @@ public class MusicService extends MediaBrowserService implements AudioManager.On
                 .setOngoing(true)
                 .setColorized(true);
 
-
         Intent PlayPrevIntent = new Intent(getApplicationContext(), PlayPrevButton.class);
         PendingIntent PrevButton = PendingIntent.getBroadcast(getApplicationContext(), 0, PlayPrevIntent, 0);
 
@@ -330,6 +331,7 @@ public class MusicService extends MediaBrowserService implements AudioManager.On
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
+        super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
 
@@ -391,12 +393,14 @@ public class MusicService extends MediaBrowserService implements AudioManager.On
 
     @Nullable
     @Override
-    public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @Nullable Bundle rootHints) {
+    public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @Nullable Bundle rootHints)
+    {
         return null;
     }
 
     @Override
-    public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowser.MediaItem>> result) {
+    public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowser.MediaItem>> result)
+    {
 
     }
 

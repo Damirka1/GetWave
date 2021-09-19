@@ -12,4 +12,13 @@
     <string name="SongArt">Song art</string>
     <string name="UndefinedTitle">Undefined title</string>
     <string name="UndefinedAuthor">Undefined author</string>
+    <string name="MusicFromServer">Music from server</string>
+    <string name="YourLibrary">Your library</string>
+
+    <string name="GoodMorning">Good morning</string>
+    <string name="GoodDay">Good day</string>
+    <string name="GoodEvening">Good evening</string>
+    <string name="GoodNight">Good night</string>
+
+    <string name="LikedTracks">Your Liked Tracks</string>
 </resources>

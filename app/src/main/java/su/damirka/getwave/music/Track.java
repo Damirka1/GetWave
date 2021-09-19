@@ -1,7 +1,16 @@
 package su.damirka.getwave.music;
 
-public class Track {
-    String Path;
-    String Title;
-    String Author;
+import java.io.Serializable;
+
+public class Track implements Serializable
+{
+    protected int Id;
+    protected String Path;
+    protected String Title;
+    protected String Author;
+
+    public int GetId()
+    {
+        return Id;
+    }
 }

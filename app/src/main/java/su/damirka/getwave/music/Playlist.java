@@ -4,10 +4,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Playlist implements Parcelable
 {
-    private final Song[] Songs;
+    private String Name = "";
+    private final List<Song> Songs;
     private long CurrentSelected = -1;
 
     public Playlist()
@@ -17,19 +21,37 @@ public class Playlist implements Parcelable
 
     public Playlist(Song[] Songs)
     {
-        this.Songs = Songs;
+        this.Songs = Arrays.asList(Songs);
     }
 
     public Playlist(Track[] tracks)
     {
-        Songs = new Song[tracks.length];
+        Songs = new ArrayList<>(tracks.length);
 
         for(int i = 0, j = tracks.length - 1; i < tracks.length; i++, j--)
-            Songs[i] = new Song(tracks[j]);
+            Songs.add(new Song(tracks[j]));
+    }
+
+    public Playlist(List<Track> tracks)
+    {
+        Songs = new ArrayList<>(tracks.size());
+
+        for(int i = 0, j = tracks.size() - 1; i < tracks.size(); i++, j--)
+            Songs.add(new Song(tracks.get(j)));
+    }
+
+    public void SetName(String Name)
+    {
+        this.Name = Name;
+    }
+
+    public String GetName()
+    {
+        return Name;
     }
 
     protected Playlist(Parcel in) {
-        Songs = in.createTypedArray(Song.CREATOR);
+        Songs = in.createTypedArrayList(Song.CREATOR);
         CurrentSelected = in.readLong();
     }
 
@@ -47,7 +69,7 @@ public class Playlist implements Parcelable
 
     public int GetSize()
     {
-        return Songs.length;
+        return Songs.size();
     }
 
     public long GetCurrentSelected()
@@ -57,32 +79,32 @@ public class Playlist implements Parcelable
 
     public Song GetSongByIndexWithoutSelecting(long Index)
     {
-        if(Index > Songs.length - 1)
+        if(Index > Songs.size() - 1)
         {
-            return Songs[0];
+            return Songs.get(0);
         }
         else if(Index < 0)
         {
-            return Songs[Songs.length - 1];
+            return Songs.get(Songs.size() - 1);
         }
-        return Songs[(int) Index];
+        return Songs.get((int) Index);
     }
 
     public Song GetSongByIndex(long Index)
     {
-        if(Index > Songs.length - 1)
+        if(Index > Songs.size() - 1)
         {
-            CurrentSelected = Songs.length - 1;
-            return Songs[(int) CurrentSelected];
+            CurrentSelected = Songs.size() - 1;
+            return Songs.get((int) CurrentSelected);
         }
         else if(Index < 0)
         {
             CurrentSelected = 0;
-            return Songs[(int) CurrentSelected];
+            return Songs.get((int) CurrentSelected);
         }
 
         CurrentSelected = Index;
-        return Songs[(int) CurrentSelected];
+        return Songs.get((int) CurrentSelected);
     }
 
     public void SetSelected(long Index)
@@ -92,21 +114,21 @@ public class Playlist implements Parcelable
 
     public Song GetCurrSong()
     {
-        return Songs[(int) CurrentSelected];
+        return Songs.get((int) CurrentSelected);
     }
 
     public Song GetNextSong()
     {
-        if(++CurrentSelected > Songs.length - 1)
+        if(++CurrentSelected > Songs.size() - 1)
             CurrentSelected = 0;
-        return Songs[(int)CurrentSelected];
+        return Songs.get((int) CurrentSelected);
     }
 
     public Song GetPrevSong()
     {
         if(--CurrentSelected < 0)
-            CurrentSelected = Songs.length - 1;
-        return Songs[(int)CurrentSelected];
+            CurrentSelected = Songs.size() - 1;
+        return Songs.get((int) CurrentSelected);
     }
 
     @Override
@@ -116,7 +138,7 @@ public class Playlist implements Parcelable
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeTypedArray(Songs, flags);
+        dest.writeTypedList(Songs);
         dest.writeLong(CurrentSelected);
     }
 }
