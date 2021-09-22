@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import su.damirka.getwave.files.TrackCacheFile;
+
 public class Song implements Parcelable
 {
     private final StreamMediaDataSource Stream;
@@ -24,13 +26,14 @@ public class Song implements Parcelable
 
     protected Song(Parcel in) {
         TrackInfo = new Track();
+        TrackInfo.Id = in.readLong();
         TrackInfo.Path = in.readString();
         TrackInfo.Title = in.readString();
         TrackInfo.Author = in.readString();
 
         Art = in.readParcelable(Bitmap.class.getClassLoader());
         HasArt = in.readByte() != 0;
-        Stream = new StreamMediaDataSource(TrackInfo.Path);
+        Stream = new StreamMediaDataSource(TrackInfo.Path, TrackInfo.Id);
     }
 
     public static final Creator<Song> CREATOR = new Creator<Song>() {
@@ -74,7 +77,7 @@ public class Song implements Parcelable
     public Song(Track track)
     {
         TrackInfo = track;
-        Stream = new StreamMediaDataSource(TrackInfo.Path);
+        Stream = new StreamMediaDataSource(TrackInfo.Path, track.Id);
         HasArt = false;
     }
 
@@ -100,6 +103,7 @@ public class Song implements Parcelable
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(TrackInfo.Id);
         dest.writeString(TrackInfo.Path);
         dest.writeString(TrackInfo.Title);
         dest.writeString(TrackInfo.Author);

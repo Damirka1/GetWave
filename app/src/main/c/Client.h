@@ -25,7 +25,7 @@ void CheckAndReconnect(struct Connection* cnt);
 
 struct Connection* Create();
 
-int Connect(struct Connection* cnt, char* ip, const char* port);
+int Connect(struct Connection* cnt, char* ip, char* port);
 
 int Send(struct Connection* cnt, int size);
 

@@ -4,12 +4,12 @@ import java.io.Serializable;
 
 public class Track implements Serializable
 {
-    protected int Id;
+    protected long Id;
     protected String Path;
     protected String Title;
     protected String Author;
 
-    public int GetId()
+    public long GetId()
     {
         return Id;
     }

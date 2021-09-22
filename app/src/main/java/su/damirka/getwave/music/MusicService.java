@@ -37,14 +37,29 @@ import java.util.Objects;
 
 import su.damirka.getwave.R;
 import su.damirka.getwave.activities.SongActivity;
+import su.damirka.getwave.files.CacheManager;
+import su.damirka.getwave.files.FileManager;
 
 public class MusicService extends MediaBrowserService implements AudioManager.OnAudioFocusChangeListener
 {
     private MusicPlayer _MusicPlayer;
 
+    private static FileManager FM;
+    private static CacheManager CM;
+
     private Notification _Notification;
     private int NotificationId = 1337;
     private NotificationManager _NotificationManager;
+
+    public static FileManager GetFileManager()
+    {
+        return FM;
+    }
+
+    public static CacheManager GetCacheManager()
+    {
+        return CM;
+    }
 
     private final PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder()
             .setActions(
@@ -91,33 +106,34 @@ public class MusicService extends MediaBrowserService implements AudioManager.On
         {
             super.onCustomAction(action, extras);
 
-            if(action.equals("UpdateStates"))
-            {
-                UpdateState();
-            }
-            else if (action.equals("UpdatePlayList"))
-            {
-                Bundle Msg = new Bundle();
-                Msg.putString("Msg", "UpdatePlayList");
-                Msg.putParcelable("Playlist", _MusicPlayer.GetPlaylist());
+            switch (action) {
+                case "UpdateStates":
+                    UpdateState();
+                    break;
+                case "UpdatePlayList": {
+                    Bundle Msg = new Bundle();
+                    Msg.putString("Msg", "UpdatePlayList");
+                    Msg.putParcelable("Playlist", _MusicPlayer.GetPlaylist());
 
-                _MediaSession.setPlaybackState(
-                        stateBuilder.setState(_MusicPlayer.IsPlaying() ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED,
-                                _MusicPlayer.GetPosition(), 1)
-                                .setExtras(Msg).build());
-            }
-            else if(action.equals("UpdateProgressBar"))
-            {
-                if(!_MusicPlayer.IsPlaying())
-                    return;
-                Bundle Msg = new Bundle();
-                Msg.putString("Msg", "UpdateProgressBar");
-                Msg.putLong("Duration", _MusicPlayer.GetDuration());
-                Msg.putLong("Position", _MusicPlayer.GetPosition());
-                _MediaSession.setPlaybackState(
-                        stateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
-                                _MusicPlayer.GetPosition(), 1)
-                                .setExtras(Msg).build());
+                    _MediaSession.setPlaybackState(
+                            stateBuilder.setState(_MusicPlayer.IsPlaying() ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED,
+                                    _MusicPlayer.GetPosition(), 1)
+                                    .setExtras(Msg).build());
+                    break;
+                }
+                case "UpdateProgressBar": {
+                    if (!_MusicPlayer.IsPlaying())
+                        return;
+                    Bundle Msg = new Bundle();
+                    Msg.putString("Msg", "UpdateProgressBar");
+                    Msg.putLong("Duration", _MusicPlayer.GetDuration());
+                    Msg.putLong("Position", _MusicPlayer.GetPosition());
+                    _MediaSession.setPlaybackState(
+                            stateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
+                                    _MusicPlayer.GetPosition(), 1)
+                                    .setExtras(Msg).build());
+                    break;
+                }
             }
         }
 
@@ -254,6 +270,9 @@ public class MusicService extends MediaBrowserService implements AudioManager.On
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, mediaButtonIntent, 0);
         _MediaSession.setMediaButtonReceiver(pendingIntent);
 
+        FM = new FileManager(this);
+        CM = new CacheManager(FM);
+
         _MusicPlayer = new MusicPlayer(getApplicationContext(), _MediaSession.getController().getTransportControls());
     }
 
@@ -332,12 +351,14 @@ public class MusicService extends MediaBrowserService implements AudioManager.On
     public int onStartCommand(Intent intent, int flags, int startId)
     {
         super.onStartCommand(intent, flags, startId);
+
         return START_STICKY;
     }
 
     @Override
     public void onDestroy()
     {
+        super.onDestroy();
         _MusicPlayer.Release();
         _MediaSession.setActive(false);
         _MediaSession.release();
@@ -349,7 +370,7 @@ public class MusicService extends MediaBrowserService implements AudioManager.On
         return new PlayerServiceBinder();
     }
 
-    public class PlayerServiceBinder extends Binder {
+    public static class PlayerServiceBinder extends Binder {
         public MediaSessionCompat.Token getMediaSessionToken() {
             return _MediaSession.getSessionToken();
         }
@@ -409,26 +430,23 @@ public class MusicService extends MediaBrowserService implements AudioManager.On
     {
         switch( focusChange ) {
             case AudioManager.AUDIOFOCUS_LOSS: {
-                if( _MusicPlayer.IsPlaying() ) {
-                    _MusicPlayer.Stop();
-                }
+                if( _MusicPlayer.IsPlaying() )
+                    _MediaSession.getController().getTransportControls().pause();;
                 break;
             }
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT: {
-                _MusicPlayer.Pause();
+                _MediaSession.getController().getTransportControls().pause();;
                 break;
             }
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK: {
-                if( _MusicPlayer != null ) {
+                if( _MusicPlayer != null )
                     _MusicPlayer.SetVolume(0.3f, 0.3f);
-                }
                 break;
             }
             case AudioManager.AUDIOFOCUS_GAIN: {
                 if( _MusicPlayer != null ) {
-                    if( !_MusicPlayer.IsPlaying() ) {
-                        _MusicPlayer.Play();
-                    }
+                    if( !_MusicPlayer.IsPlaying() )
+                        _MediaSession.getController().getTransportControls().play();;
                     _MusicPlayer.SetVolume(1.0f, 1.0f);
                 }
                 break;

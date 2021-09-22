@@ -13,6 +13,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 import su.damirka.getwave.activities.MainActivity;
+import su.damirka.getwave.music.MusicService;
 
 public class FileManager
 {
@@ -24,6 +25,11 @@ public class FileManager
         Directory = contextWrapper.getDir(MA.getFilesDir().getName(), Context.MODE_PRIVATE);
     }
 
+    public FileManager(MusicService MS)
+    {
+        ContextWrapper contextWrapper = new ContextWrapper(MS.getApplicationContext());
+        Directory = contextWrapper.getDir(MS.getFilesDir().getName(), Context.MODE_PRIVATE);
+    }
     public void Save(byte[] bytes, String Filename)
     {
         File file =  new File(Directory, Filename);
@@ -76,7 +82,7 @@ public class FileManager
             fis.close();
             return data;
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return null;
         }
     }

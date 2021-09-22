@@ -38,11 +38,29 @@ Java_su_damirka_getwave_connection_ConnectionService_LoadAllMusicFromServer(JNIE
         Release(Tracks);
 
     Tracks = Dispatch(cnt);
+
     jclass trackClass = (*env)->FindClass(env, "su/damirka/getwave/music/Track");
-    jfieldID IdID = (*env)->GetFieldID(env, trackClass, "Id", "I");
+    jfieldID IdID = (*env)->GetFieldID(env, trackClass, "Id", "J");
     jfieldID PathID = (*env)->GetFieldID(env, trackClass, "Path", "Ljava/lang/String;");
     jfieldID TitleID = (*env)->GetFieldID(env, trackClass, "Title", "Ljava/lang/String;");
     jfieldID AuthorID = (*env)->GetFieldID(env, trackClass, "Author", "Ljava/lang/String;");
+
+    if(Tracks == 0)
+    {
+        jobjectArray JavaTracks = (*env)->NewObjectArray(env, 1, trackClass, NULL);
+
+        jmethodID constructor = (*env)->GetMethodID(env, trackClass, "<init>", "()V");
+        jobject instance = (*env)->NewObject(env, trackClass, constructor);
+
+        (*env)->SetLongField(env, instance, IdID, -1LL);
+        (*env)->SetObjectField(env, instance, PathID, (*env)->NewStringUTF(env, "-1"));
+        (*env)->SetObjectField(env, instance, TitleID, (*env)->NewStringUTF(env, "-1"));
+        (*env)->SetObjectField(env, instance, AuthorID, (*env)->NewStringUTF(env, "-1"));
+
+        (*env)->SetObjectArrayElement(env, JavaTracks, 0, instance);
+
+        return JavaTracks;
+    }
 
     jobjectArray JavaTracks = (*env)->NewObjectArray(env, Tracks->Size, trackClass, NULL);
 
@@ -53,7 +71,7 @@ Java_su_damirka_getwave_connection_ConnectionService_LoadAllMusicFromServer(JNIE
         jmethodID constructor = (*env)->GetMethodID(env, trackClass, "<init>", "()V");
         jobject instance = (*env)->NewObject(env, trackClass, constructor);
 
-        (*env)->SetIntField(env, instance, IdID, track->Id);
+        (*env)->SetLongField(env, instance, IdID, track->Id);
         (*env)->SetObjectField(env, instance, PathID, (*env)->NewStringUTF(env, track->Path));
         (*env)->SetObjectField(env, instance, TitleID, (*env)->NewStringUTF(env, track->Title));
         (*env)->SetObjectField(env, instance, AuthorID, (*env)->NewStringUTF(env, track->Author));
@@ -77,6 +95,15 @@ Java_su_damirka_getwave_music_StreamMediaDataSource_GetFileFromServer(JNIEnv* en
     (*env)->ReleaseStringUTFChars(env, Path, nativePath);
 
     struct Vector* File = Dispatch(cnt);
+
+    if(File == 0)
+    {
+        jbyteArray array = (*env)->NewByteArray(env, 1);
+        char res = (char)-1;
+        (*env)->SetByteArrayRegion(env, array, 0, 1, (jbyte *) &res);
+        return array;
+    }
+
     jbyteArray array = (*env)->NewByteArray(env, File->DataSize);
     (*env)->SetByteArrayRegion(env, array, 0, File->DataSize, File->pData);
 
@@ -98,6 +125,10 @@ Java_su_damirka_getwave_music_StreamMediaDataSource_GetSizeofFile(JNIEnv* env, j
     Send(cnt, cnt->command_buffer_size);
 
     struct Vector* vec = Dispatch(cnt);
+
+    if(vec == 0)
+        return -1;
+
     return vec->DataSize;
 }
 
@@ -108,7 +139,7 @@ Java_su_damirka_getwave_music_StreamMediaDataSource_GetStreamFromServer(JNIEnv* 
 
     char pos[12];
     char s[12];
-    sprintf(pos, ";%lld;", position);
+    sprintf(pos, ";%lld;", (long long)position);
     sprintf(s, "%d;", size);
 
     const char *nativePath = (*env)->GetStringUTFChars(env, Path, 0);

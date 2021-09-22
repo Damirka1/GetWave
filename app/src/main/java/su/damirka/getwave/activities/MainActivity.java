@@ -23,10 +23,11 @@ public class MainActivity extends AppCompatActivity
 {
     private static Application App;
     private static Context ApplicationContext;
-    private static MusicService _MusicService;
 
     private static MusicService.PlayerServiceBinder playerServiceBinder;
     private static MediaControllerCompat MediaController;
+
+    private static boolean Ready = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -34,7 +35,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         try {
-            _MusicService = new MusicService();
             ApplicationContext = this.getApplicationContext();
             App = new Application(this);
 
@@ -47,38 +47,36 @@ public class MainActivity extends AppCompatActivity
                                 MainActivity.this, playerServiceBinder.getMediaSessionToken());
                         MediaController.registerCallback(
                                 new MediaControllerCompat.Callback() {
-                                    @Override
-                                    public void onMetadataChanged(MediaMetadataCompat metadata)
+                            @Override
+                            public void onMetadataChanged(MediaMetadataCompat metadata)
+                            {
+                                super.onMetadataChanged(metadata);
+                            }
+
+                            @Override
+                            public void onPlaybackStateChanged(PlaybackStateCompat state)
+                            {
+                                if (state == null || App == null)
+                                    return;
+
+                                if(Objects.nonNull(state.getExtras()))
+                                {
+                                    Bundle Msg = state.getExtras();
+
+                                    if(Objects.nonNull(Msg.getString("Msg")))
                                     {
-                                        super.onMetadataChanged(metadata);
-
-                                    }
-
-                                    @Override
-                                    public void onPlaybackStateChanged(PlaybackStateCompat state)
-                                    {
-                                        if (state == null)
-                                            return;
-
-                                        if(Objects.nonNull(state.getExtras()))
-                                        {
-                                            Bundle Msg = state.getExtras();
-
-                                            if(Objects.nonNull(Msg.getString("Msg")))
-                                            {
-                                                String Info = Msg.getString("Msg");
-                                                if(Info.equals("UpdateProgressBar"))
-                                                    App.UpdateProgressbar(Msg.getLong("Position"), Msg.getLong("Duration"));
+                                        String Info = Msg.getString("Msg");
+                                        if(Info.equals("UpdateProgressBar"))
+                                            App.UpdateProgressbar(Msg.getLong("Position"), Msg.getLong("Duration"));
 //                                                else if(Info.equals("UpdatePlayList"))
 //                                                    App.UpdateDefaultPlaylist(Msg);
-                                                return;
-                                            }
-                                        }
-
-                                        App.UpdateAppStates(state);
+                                        return;
                                     }
                                 }
-                        );
+                                App.UpdateAppStates(state);
+                            }
+                        });
+                        Ready = true;
                     }
                     catch (RemoteException e) {
                         MediaController = null;
@@ -91,12 +89,6 @@ public class MainActivity extends AppCompatActivity
                     MediaController = null;
                 }
             }, BIND_AUTO_CREATE);
-
-            Intent MusicServiceIntent = new Intent(ApplicationContext, _MusicService.getClass());
-            startService(MusicServiceIntent);
-
-            if(Objects.nonNull(MediaController))
-                MediaController.getTransportControls().sendCustomAction("UpdatePlayList", null);
 
         } catch (Exception e) {
             onDestroy();
@@ -114,6 +106,21 @@ public class MainActivity extends AppCompatActivity
     {
         super.onResume();
         App.Resume();
+    }
+
+    public static boolean IsReady()
+    {
+        return Ready;
+    }
+
+    public static void StartService()
+    {
+        ApplicationContext.startForegroundService(new Intent(ApplicationContext, MusicService.class));
+    }
+
+    public static void StopService()
+    {
+        ApplicationContext.stopService(new Intent(ApplicationContext, MusicService.class));
     }
 
     public static Application GetApp()
@@ -138,9 +145,16 @@ public class MainActivity extends AppCompatActivity
     protected void onDestroy()
     {
         super.onDestroy();
-//        Intent MusicServiceIntent = new Intent(ApplicationContext, _MusicService.getClass());
-//        stopService(MusicServiceIntent);
         App.Exit();
+        StopService();
+
+        ApplicationContext = null;
+
+        playerServiceBinder = null;
+        MediaController = null;
+
+        Ready = false;
+        App = null;
     }
 
 }

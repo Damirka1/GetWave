@@ -13,7 +13,7 @@
 struct Connection* Create()
 {
 	struct Connection* cnt = malloc(sizeof(struct Connection));
-	cnt->buffer_size = 1024000; // 1 mb.
+	cnt->buffer_size = 262144; // 256 kb.
 	cnt->command_buffer_size = 2048; // 2kb.
 	cnt->message = malloc(cnt->buffer_size);
 	cnt->result = malloc(cnt->buffer_size);
@@ -31,7 +31,7 @@ void CheckAndReconnect(struct Connection* cnt)
         Connect(cnt, cnt->ip, cnt->port);
 }
 
-int Connect(struct Connection* cnt, char* ip, const char* port)
+int Connect(struct Connection* cnt, char* ip, char* port)
 {
     struct addrinfo hints, *servinfo;
 

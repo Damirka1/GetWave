@@ -15,6 +15,9 @@ public class ConnectionService implements Runnable
 
     private static native Track[] LoadAllMusicFromServer();
 
+    private static boolean ErrorFlag = false;
+    private static String ErrorMsg = "";
+
     public static Optional<Playlist> GetDownloadedPlaylist(int Index)
     {
         try
@@ -33,11 +36,34 @@ public class ConnectionService implements Runnable
         return Optional.empty();
     }
 
+    public static boolean CheckError()
+    {
+        return ErrorFlag;
+    }
+
+    public static String GetErrorMsg()
+    {
+        return ErrorMsg;
+    }
+
     public static int StartDownloadingPlaylistWithAllMusic()
     {
         int Size = PlaylistDownloadingVector.size();
         new Thread(() -> {
             Track[] Tracks = LoadAllMusicFromServer();
+
+            if(Tracks.length == 1)
+            {
+                Track err = Tracks[0];
+
+                if(err.GetId() == -1)
+                {
+                    ErrorFlag = true;
+                    ErrorMsg = "Can't download playlist from server\n";
+                    return;
+                }
+            }
+
             Playlist nPlaylist = new Playlist(Tracks);
             PlaylistDownloadingVector.add(nPlaylist);
         }).start();

@@ -7,6 +7,8 @@ import java.util.Objects;
 
 import su.damirka.getwave.activities.MainActivity;
 import su.damirka.getwave.connection.ConnectionService;
+import su.damirka.getwave.files.CacheFile;
+import su.damirka.getwave.files.CacheManager;
 import su.damirka.getwave.files.FileManager;
 import su.damirka.getwave.views.playlists.Adapter;
 import windows.WindowManager;
@@ -17,8 +19,8 @@ public class Application
 //    public String port = "25565";
 
     private final FileManager FM;
+    private final CacheManager CM;
     private final WindowManager WM;
-    private final MainActivity MA;
     private final ConnectionService ConnectionService;
 
     private final Thread UpdateThread;
@@ -34,10 +36,10 @@ public class Application
             throw new Exception("Can't connect to server\n");
 
         FM = new FileManager(MA);
+        CM = new CacheManager(FM);
 
         ConnectionService = new ConnectionService();
         WM = new WindowManager(MA);
-        this.MA = MA;
 
         Sleep = false;
         Running = true;
@@ -49,12 +51,16 @@ public class Application
     {
         return FM;
     }
+    public CacheManager GetCacheManager() { return CM; }
 
     private void Update()
     {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ignored) {}
+        while(!MainActivity.IsReady())
+        {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException ignored) {}
+        }
 
         while(Running)
         {
@@ -81,7 +87,7 @@ public class Application
     public void Resume()
     {
         Sleep = false;
-        if(Objects.nonNull(MainActivity.GetMediaController()))
+        if(Objects.nonNull(MainActivity.GetMediaController()) && MainActivity.IsReady())
             MainActivity.GetMediaController().getTransportControls().sendCustomAction("UpdateStates", null);
     }
 
@@ -94,6 +100,7 @@ public class Application
 
     public void SetPlaylist(Adapter playlist)
     {
+        MainActivity.StartService();
         if(Objects.isNull(CurrentPlaylist) || !playlist.GetName().equals(CurrentPlaylist.GetName()) || playlist.GetCount() != CurrentPlaylist.GetCount())
         {
             Bundle Msg = new Bundle();
@@ -110,12 +117,14 @@ public class Application
             CurrentPlaylist.Update((int)States.getExtras().getLong("Index"));
     }
 
-    public void Exit() {
+    public void Exit()
+    {
         WM.Release();
         Running = false;
         Sleep = false;
         try {
             UpdateThread.join();
+            Thread.sleep(2000);
         } catch (InterruptedException ignore) {}
 
     }
