@@ -45,9 +45,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="06dcbf46-bf03-4ef4-9864-63cb08cfcc6c" name="Default Changelist" comment="Added liked playlist">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/files/CacheFile.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/files/CacheManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/files/TrackCacheFile.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/c/Client.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/c/Client.c" afterDir="false" />
@@ -55,13 +52,14 @@
       <change beforePath="$PROJECT_DIR$/app/src/main/c/ClientLib.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/c/ClientLib.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/c/Track.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/c/Track.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/Application.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/Application.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/activities/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/activities/MainActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/connection/ConnectionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/connection/ConnectionService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/files/FileManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/files/FileManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/music/MusicPlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/music/MusicPlayer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/music/MusicService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/music/MusicService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/music/Song.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/music/Song.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/music/StreamMediaDataSource.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/music/StreamMediaDataSource.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/music/Track.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/music/Track.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/views/playlists/find/FindLibManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/views/playlists/find/FindLibManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/views/playlists/find/FindMenuPlaylistAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/views/playlists/find/FindMenuPlaylistAdapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/windows/WindowManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/windows/WindowManager.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,7 +69,7 @@
   <component name="CompilerWorkspaceConfiguration">
     <option name="PARALLEL_COMPILATION" value="true" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[3984da262c057ece]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -136,7 +134,7 @@
     <property name="android-custom-viewC:/Users/hamit/AppData/Local/Android/Sdk/sources/android-30/android/widget/ImageView.java_SELECTED" value="ImageView" />
     <property name="android-custom-viewE:/AndroidStudioProjects/GetWave/app/src/main/java/su/damirka/getwave/Song.java_SELECTED" value="Song" />
     <property name="android-custom-viewE:/AndroidStudioProjects/GetWave/app/src/main/java/su/damirka/getwave/Window.java_SELECTED" value="Song" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/app/build/outputs/apk/debug/app-debug.apk" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="multi-representation-previewC:/Users/hamit/AppData/Local/Android/Sdk/sources/android-30/android/widget/ImageView.java_selected" value="Custom views" />
     <property name="multi-representation-previewE:/AndroidStudioProjects/GetWave/app/src/main/java/su/damirka/getwave/Song.java_selected" value="" />
     <property name="multi-representation-previewE:/AndroidStudioProjects/GetWave/app/src/main/java/su/damirka/getwave/Window.java_selected" value="" />
@@ -162,7 +160,7 @@
       <recent name="su.damirka.getwave" />
     </key>
   </component>
-  <component name="RunManager" selected="Android App.app">
+  <component name="RunManager" selected="Android App.MainActivity">
     <configuration default="true" type="AndroidJUnit" factoryName="Android JUnit">
       <option name="TEST_OBJECT" value="class" />
       <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
@@ -189,7 +187,7 @@
       <option name="TARGET_SELECTION_MODE" value="DEVICE_AND_SNAPSHOT_COMBO_BOX" />
       <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="-1" />
       <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
-      <option name="DEBUGGER_TYPE" value="Auto" />
+      <option name="DEBUGGER_TYPE" value="Java" />
       <Auto>
         <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
         <option name="SHOW_STATIC_VARS" value="true" />
@@ -214,9 +212,9 @@
       </Native>
       <Profilers>
         <option name="ADVANCED_PROFILING_ENABLED" value="false" />
-        <option name="STARTUP_PROFILING_ENABLED" value="false" />
-        <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
-        <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Sample Java Methods" />
+        <option name="STARTUP_PROFILING_ENABLED" value="true" />
+        <option name="STARTUP_CPU_PROFILING_ENABLED" value="true" />
+        <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Trace Java Methods" />
         <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
         <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
       </Profilers>
@@ -322,7 +320,14 @@
       <option name="project" value="LOCAL" />
       <updated>1632083604421</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Fixing bugs, added track caching.">
+      <created>1632315149959</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1632315149959</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -362,6 +367,23 @@
     <MESSAGE value="workspace.xml" />
     <MESSAGE value="Added media session" />
     <MESSAGE value="Added liked playlist" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added liked playlist" />
+    <MESSAGE value="Fixing bugs, added track caching." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixing bugs, added track caching." />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/music/MusicPlayer.java</url>
+          <line>210</line>
+          <option name="timeStamp" value="40" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/su/damirka/getwave/music/MusicPlayer.java</url>
+          <line>209</line>
+          <option name="timeStamp" value="41" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

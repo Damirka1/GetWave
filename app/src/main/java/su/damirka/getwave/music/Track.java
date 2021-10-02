@@ -8,9 +8,11 @@ public class Track implements Serializable
     protected String Path;
     protected String Title;
     protected String Author;
+    protected String ArtPath;
 
     public long GetId()
     {
         return Id;
     }
+    public String GetArtPath() { return ArtPath; }
 }

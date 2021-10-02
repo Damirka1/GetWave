@@ -273,7 +273,7 @@ public class MusicService extends MediaBrowserService implements AudioManager.On
         FM = new FileManager(this);
         CM = new CacheManager(FM);
 
-        _MusicPlayer = new MusicPlayer(getApplicationContext(), _MediaSession.getController().getTransportControls());
+        _MusicPlayer = new MusicPlayer(this, _MediaSession.getController().getTransportControls());
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")

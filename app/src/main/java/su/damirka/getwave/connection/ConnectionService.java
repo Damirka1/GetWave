@@ -1,22 +1,29 @@
 package su.damirka.getwave.connection;
 
+import android.widget.Toast;
+
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Vector;
 
+import su.damirka.getwave.activities.MainActivity;
 import su.damirka.getwave.music.Playlist;
 import su.damirka.getwave.music.Track;
 
 public class ConnectionService implements Runnable
 {
     private static boolean Running;
+    private static boolean CanConnect = true;
 
     private static Vector<Playlist> PlaylistDownloadingVector;
 
     private static native Track[] LoadAllMusicFromServer();
+    private static native byte[] GetFileFromServer(String Path);
 
     private static boolean ErrorFlag = false;
     private static String ErrorMsg = "";
+
+    private native boolean Connect();
 
     public static Optional<Playlist> GetDownloadedPlaylist(int Index)
     {
@@ -46,6 +53,8 @@ public class ConnectionService implements Runnable
         return ErrorMsg;
     }
 
+    public static boolean CanConnect() { return CanConnect; }
+
     public static int StartDownloadingPlaylistWithAllMusic()
     {
         int Size = PlaylistDownloadingVector.size();
@@ -70,8 +79,14 @@ public class ConnectionService implements Runnable
         return Size;
     }
 
-    public ConnectionService()
+    public ConnectionService(MainActivity MA)
     {
+        if(!Connect())
+        {
+            Toast.makeText(MA, "Can't connect to the Server", Toast.LENGTH_LONG).show();
+            CanConnect = false;
+        }
+
         Initialize();
     }
 
@@ -79,6 +94,18 @@ public class ConnectionService implements Runnable
     {
         Running = true;
         PlaylistDownloadingVector = new Vector<>();
+    }
+
+    public static byte[] DownloadFileFromServer(String Path)
+    {
+        if(CanConnect)
+        {
+            byte[] data = GetFileFromServer(Path);
+            if(data[0] == -1 && data.length == 1)
+                return null;
+            return data;
+        }
+        return null;
     }
 
     @Override

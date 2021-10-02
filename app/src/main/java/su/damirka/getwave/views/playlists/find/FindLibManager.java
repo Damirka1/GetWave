@@ -29,6 +29,8 @@ public class FindLibManager extends PlaylistManager
             {
                 Thread.sleep(100);
                 Value = ConnectionService.GetDownloadedPlaylist(Index);
+                if(ConnectionService.CheckError())
+                    return;
             }
             catch (InterruptedException interruptedException)
             {

@@ -1,5 +1,7 @@
 package su.damirka.getwave.views.playlists.find;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,8 +18,11 @@ import java.util.Objects;
 
 import su.damirka.getwave.R;
 import su.damirka.getwave.activities.MainActivity;
+import su.damirka.getwave.connection.ConnectionService;
+import su.damirka.getwave.files.CacheFile;
 import su.damirka.getwave.files.FileManager;
 import su.damirka.getwave.files.PlaylistTracks;
+import su.damirka.getwave.music.MusicService;
 import su.damirka.getwave.music.Playlist;
 import su.damirka.getwave.music.Song;
 import su.damirka.getwave.music.Track;
@@ -122,8 +127,8 @@ public class FindMenuPlaylistAdapter extends RecyclerView.Adapter<FindMenuPlayli
         private final TextView ViewName, ViewAuthor;
         private final ImageView ViewImage;
         private final ImageView HeartImage;
-        private Playlist pPlaylist;
-        private Adapter Parent;
+        private final Playlist pPlaylist;
+        private final Adapter Parent;
         private Song s;
         private boolean Liked;
 
@@ -131,6 +136,30 @@ public class FindMenuPlaylistAdapter extends RecyclerView.Adapter<FindMenuPlayli
         {
             ViewName.setText(s.GetTitle());
             ViewAuthor.setText(s.GetAuthor());
+
+            String ArtPath = s.GetTrack().GetArtPath();
+            if(ArtPath.length() > 0 && !s.HasArt())
+            {
+                CacheFile file = MusicService.GetCacheManager().LoadArtCache(s.GetTrack().GetId());
+                byte[] Data;
+                if(Objects.nonNull(file))
+                    Data = file.GetData();
+                else
+                {
+                    Data = ConnectionService.DownloadFileFromServer(ArtPath);
+                    if(Objects.nonNull(Data))
+                    {
+                        CacheFile art = new CacheFile(s.GetTrack().GetId(), Data);
+                        MusicService.GetCacheManager().SaveAsArtCache(art);
+                    }
+                }
+                if(Objects.nonNull(Data))
+                {
+                    Bitmap bmp = BitmapFactory.decodeByteArray(Data, 0, Data.length);
+                    s.SetArt(bmp);
+                    ViewImage.setImageBitmap(s.GetArt());
+                }
+            }
 
             if(s.HasArt())
                 ViewImage.setImageBitmap(s.GetArt());

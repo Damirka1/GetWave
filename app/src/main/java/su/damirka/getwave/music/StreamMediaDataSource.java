@@ -169,11 +169,8 @@ package su.damirka.getwave.music;
 
 import android.media.MediaDataSource;
 
-import java.io.File;
-import java.io.Serializable;
 import java.util.Objects;
 
-import su.damirka.getwave.activities.MainActivity;
 import su.damirka.getwave.files.CacheManager;
 import su.damirka.getwave.files.TrackCacheFile;
 
@@ -196,7 +193,6 @@ public class StreamMediaDataSource extends MediaDataSource
 
     private native int GetStreamFromServer(String Path, byte[] buffer, int offset, long position, int size);
     private native long GetSizeofFile(String Path);
-    //public native byte[] GetFileFromServer(String Path);
 
     public StreamMediaDataSource(String Path, long Id)
     {
@@ -207,7 +203,7 @@ public class StreamMediaDataSource extends MediaDataSource
 
     private void SetDefault()
     {
-        ChunkSize = 262144;
+        ChunkSize = 131072;
         pData = null;
         Downloader = null;
         FileSize = -1;
@@ -217,11 +213,6 @@ public class StreamMediaDataSource extends MediaDataSource
 
         ErrorFlag = false;
         ErrorMessage = "";
-    }
-
-    public boolean IsDownloaded()
-    {
-        return Iterator == FileSize;
     }
 
     public long GetIterator()
@@ -284,7 +275,7 @@ public class StreamMediaDataSource extends MediaDataSource
 
         while(Iterator != FileSize)
         {
-            while(Iterator > CurrentPosition + ChunkSize)
+            while(Iterator > CurrentPosition + ChunkSize * 20L)
             {
                 if(Exit)
                     return;
@@ -295,7 +286,7 @@ public class StreamMediaDataSource extends MediaDataSource
                 }
             }
 
-            for(int i = 0; i < 3 && Iterator != FileSize; i++)
+            for(int i = 0; i < 30 && Iterator != FileSize; i++)
             {
                 if(Iterator + ChunkSize > FileSize)
                 {
@@ -311,20 +302,24 @@ public class StreamMediaDataSource extends MediaDataSource
                 {
                     ErrorFlag = true;
                     ErrorMessage = "Can't receive data from server\n";
+                    continue;
                 }
 
                 Iterator += ReadSize;
 
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException ignored) {
-                }
+                if(Exit)
+                    return;
+
+//                try {
+//                    Thread.sleep(100);
+//                } catch (InterruptedException ignored) {
+//                }
             }
         }
     }
 
     @Override
-    public synchronized int readAt(long position, byte[] buffer, int offset, int size)
+    public int readAt(long position, byte[] buffer, int offset, int size)
     {
         CurrentPosition = position;
 
@@ -337,7 +332,7 @@ public class StreamMediaDataSource extends MediaDataSource
                 return -1;
 
             try {
-                Thread.sleep(100);
+                Thread.sleep(1000);
             } catch (InterruptedException ignored) {
             }
         }
@@ -361,7 +356,8 @@ public class StreamMediaDataSource extends MediaDataSource
         Exit = true;
 
         try {
-            Downloader.join();
+            if(Objects.nonNull(Downloader))
+                Downloader.join();
         } catch (InterruptedException ignored) {
         }
 
@@ -369,7 +365,7 @@ public class StreamMediaDataSource extends MediaDataSource
     }
 
     @Override
-    public synchronized long getSize()
+    public long getSize()
     {
         if(FileSize >= 0)
             return FileSize;

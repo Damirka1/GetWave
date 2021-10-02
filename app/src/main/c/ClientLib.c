@@ -1,4 +1,4 @@
-
+#include <alloca.h>
 #include <jni.h>
 #include "Client.h"
 #include "Track.h"
@@ -8,13 +8,13 @@
 #include <android/log.h>
 
 static struct Connection* cnt;
-//static char* ip = "2.135.158.175";
+//static char* ip = "31.169.0.169";
 static char* ip = "192.168.1.30";
 static char* port = "25565";
 static struct Vector* Tracks = NULL;
 
 extern JNIEXPORT jboolean
-Java_su_damirka_getwave_Application_Connect(JNIEnv* env, jobject this)
+Java_su_damirka_getwave_connection_ConnectionService_Connect(JNIEnv* env, jobject this)
 {
     cnt = Create();
 
@@ -44,6 +44,7 @@ Java_su_damirka_getwave_connection_ConnectionService_LoadAllMusicFromServer(JNIE
     jfieldID PathID = (*env)->GetFieldID(env, trackClass, "Path", "Ljava/lang/String;");
     jfieldID TitleID = (*env)->GetFieldID(env, trackClass, "Title", "Ljava/lang/String;");
     jfieldID AuthorID = (*env)->GetFieldID(env, trackClass, "Author", "Ljava/lang/String;");
+    jfieldID ArtPathID = (*env)->GetFieldID(env, trackClass, "ArtPath", "Ljava/lang/String;");
 
     if(Tracks == 0)
     {
@@ -56,6 +57,7 @@ Java_su_damirka_getwave_connection_ConnectionService_LoadAllMusicFromServer(JNIE
         (*env)->SetObjectField(env, instance, PathID, (*env)->NewStringUTF(env, "-1"));
         (*env)->SetObjectField(env, instance, TitleID, (*env)->NewStringUTF(env, "-1"));
         (*env)->SetObjectField(env, instance, AuthorID, (*env)->NewStringUTF(env, "-1"));
+        (*env)->SetObjectField(env, instance, ArtPathID, (*env)->NewStringUTF(env, "-1"));
 
         (*env)->SetObjectArrayElement(env, JavaTracks, 0, instance);
 
@@ -75,6 +77,7 @@ Java_su_damirka_getwave_connection_ConnectionService_LoadAllMusicFromServer(JNIE
         (*env)->SetObjectField(env, instance, PathID, (*env)->NewStringUTF(env, track->Path));
         (*env)->SetObjectField(env, instance, TitleID, (*env)->NewStringUTF(env, track->Title));
         (*env)->SetObjectField(env, instance, AuthorID, (*env)->NewStringUTF(env, track->Author));
+        (*env)->SetObjectField(env, instance, ArtPathID, (*env)->NewStringUTF(env, track->ArtPath));
 
         (*env)->SetObjectArrayElement(env, JavaTracks, i, instance);
     }
@@ -83,33 +86,44 @@ Java_su_damirka_getwave_connection_ConnectionService_LoadAllMusicFromServer(JNIE
 }
 
 extern JNIEXPORT jbyteArray
-Java_su_damirka_getwave_music_StreamMediaDataSource_GetFileFromServer(JNIEnv* env, jobject this, jstring Path)
+Java_su_damirka_getwave_connection_ConnectionService_GetFileFromServer(JNIEnv* env, jobject this, jstring Path)
 {
-    CheckAndReconnect(cnt);
+    struct Connection* filecnt = Create();
 
-    const char* nativePath = (*env)->GetStringUTFChars(env, Path, 0);
-    strcpy(cnt->message, "getfile ");
+    if(Connect(filecnt, ip, port) == 0)
+    {
+        const char* nativePath = (*env)->GetStringUTFChars(env, Path, 0);
+        strcpy(filecnt->message, "getfile ");
 
-    memcpy(cnt->message + strlen(cnt->message), nativePath, strlen(nativePath));
-    Send(cnt, cnt->command_buffer_size);
-    (*env)->ReleaseStringUTFChars(env, Path, nativePath);
+        memcpy(filecnt->message + strlen(filecnt->message), nativePath, strlen(nativePath));
+        Send(filecnt, filecnt->command_buffer_size);
+        (*env)->ReleaseStringUTFChars(env, Path, nativePath);
 
-    struct Vector* File = Dispatch(cnt);
+        struct Vector* File = Dispatch(filecnt);
 
-    if(File == 0)
+        if(File == 0)
+        {
+            jbyteArray array = (*env)->NewByteArray(env, 1);
+            char res = (char)-1;
+            (*env)->SetByteArrayRegion(env, array, 0, 1, (jbyte *) &res);
+            return array;
+        }
+
+        jbyteArray array = (*env)->NewByteArray(env, File->DataSize);
+        (*env)->SetByteArrayRegion(env, array, 0, File->DataSize, File->pData);
+
+        Release(File);
+        ReleaseConnection(filecnt);
+
+        return array;
+    }
+    else
     {
         jbyteArray array = (*env)->NewByteArray(env, 1);
         char res = (char)-1;
         (*env)->SetByteArrayRegion(env, array, 0, 1, (jbyte *) &res);
         return array;
     }
-
-    jbyteArray array = (*env)->NewByteArray(env, File->DataSize);
-    (*env)->SetByteArrayRegion(env, array, 0, File->DataSize, File->pData);
-
-    Release(File);
-
-    return array;
 }
 
 extern JNIEXPORT jlong

@@ -2,6 +2,7 @@ package su.damirka.getwave;
 
 import android.os.Bundle;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.widget.Toast;
 
 import java.util.Objects;
 
@@ -27,18 +28,15 @@ public class Application
     private boolean Running;
     private boolean Sleep;
 
-    private native boolean Connect();
+
 
     public Application(MainActivity MA) throws Exception {
         System.loadLibrary("Client-Connection");
 
-        if(!Connect())
-            throw new Exception("Can't connect to server\n");
-
         FM = new FileManager(MA);
         CM = new CacheManager(FM);
 
-        ConnectionService = new ConnectionService();
+        ConnectionService = new ConnectionService(MA);
         WM = new WindowManager(MA);
 
         Sleep = false;

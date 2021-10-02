@@ -16,6 +16,7 @@ import java.util.Objects;
 
 import su.damirka.getwave.R;
 import su.damirka.getwave.activities.MainActivity;
+import su.damirka.getwave.connection.ConnectionService;
 import su.damirka.getwave.music.Song;
 import su.damirka.getwave.views.playlists.find.FindLibManager;
 import su.damirka.getwave.views.playlists.PlaylistManager;
@@ -91,13 +92,16 @@ public class WindowManager
         TextView.setTextSize(24);
         TextView.setText(R.string.MusicFromServer);
 
-        if(Objects.isNull(Find))
-            Find = new FindLibManager(MainLayout);
-
-        CurrManager = Find;
-
         CurWindow.Show();
-        CurrManager.Show();
+
+        if(ConnectionService.CanConnect())
+        {
+            if(Objects.isNull(Find))
+                Find = new FindLibManager(MainLayout);
+
+            CurrManager = Find;
+            CurrManager.Show();
+        }
     }
 
     public void LibClick(View v)

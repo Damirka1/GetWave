@@ -27,9 +27,9 @@ struct Connection* Create();
 
 int Connect(struct Connection* cnt, char* ip, char* port);
 
-int Send(struct Connection* cnt, int size);
+long long Send(struct Connection* cnt, long long size);
 
-int Recieve(struct Connection* cnt, int size);
+long long Receieve(struct Connection* cnt, long long size);
 
 void* Dispatch(struct Connection* cnt);
 

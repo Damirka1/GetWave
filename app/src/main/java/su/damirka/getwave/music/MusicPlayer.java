@@ -17,7 +17,7 @@ import java.util.Objects;
 
 import su.damirka.getwave.activities.MainActivity;
 
-public class MusicPlayer implements MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener {
+public class MusicPlayer implements MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener {
 
     private MediaPlayer MP;
     private AudioManager AM;
@@ -115,12 +115,8 @@ public class MusicPlayer implements MediaPlayer.OnCompletionListener, MediaPlaye
             Stop();
 
         if(Objects.nonNull(CurrentStream))
-        {
             CurrentStream.CloseAsync();
-            CurrentStream = another;
-        }
-        else
-            CurrentStream = another;
+        CurrentStream = another;
 
 //        if(Objects.nonNull(CurrentStream))
 //        {
@@ -208,4 +204,10 @@ public class MusicPlayer implements MediaPlayer.OnCompletionListener, MediaPlaye
         Controller.play();
     }
 
+    @Override
+    public boolean onError(MediaPlayer mp, int what, int extra)
+    {
+        System.out.printf("Error\n");
+        return false;
+    }
 }
